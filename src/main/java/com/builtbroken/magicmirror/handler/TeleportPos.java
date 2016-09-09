@@ -60,6 +60,11 @@ public class TeleportPos
      */
     public void teleport(EntityPlayer player)
     {
+        //TODO display particle effects as last location, and new location
+        //TODO show trail point in the direction the user teleported
+        //TODO use purple smoke
+        //TODO play sound effect at both locations
+        //TODO use different sounds for leave and enter
         if (player instanceof EntityPlayerMP)
         {
             player.addChatComponentMessage(new ChatComponentText("*Poof*"));

@@ -23,33 +23,10 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = MagicMirror.DOMAIN, name = "SMB Magic Mirror", version = "@MAJOR@.@MINOR@.@REVIS@.@BUILD@")
 public class MagicMirror
 {
-    //TODO track position
-    //TODO ignore all position that can't see sky
-    //TODO ignore all positions bellow see level, should fix user being seen inside holes and in canyons
-    //TODO ensure user has been above ground longer than a few mins, TWO positions (Best, and Last resort)
-    //TODO ignore trees and see threw blocks to improve canSeeSky()
-
-    //TODO after finished
     //TODO make the mirror glow when it can be used
     //TODO make it have a visual change when it has a stored location
     //TODO show some kind of progress bar for XP needed
-
-
-    //TODO Step 1 - Build the init
-    //TODO      ModClass
-    //TODO      ClientProxy
-    //TODO      CommonProxy
-    //TODO      ServerProxy     - Handle server side only stuff, commands
-
-    //TODO Step 2 - Make the item
-    //TODO      Item.class
-    //TODO      Right Click Method
-    //TODO      Texture
-
-    //TODO Step 3 - Build the player tracker
-    //TODO      Storing the position
-    //TODO      Event Handling(Dies, Respawns, Moves, Jumps)
-    //TODO      Event to fire(Marks position, etc) -- optional
+    //TODO Event to fire(Marks position, etc)
 
     public static final boolean runningAsDev = System.getProperty("development") != null && System.getProperty("development").equalsIgnoreCase("true");
     public static final Logger logger = LogManager.getLogger("SBM-MagicMirror");

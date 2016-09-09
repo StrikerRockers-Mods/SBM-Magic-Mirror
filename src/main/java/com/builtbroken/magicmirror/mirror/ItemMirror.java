@@ -36,6 +36,7 @@ public class ItemMirror extends Item
     @Override
     public void onUsingTick(ItemStack stack, EntityPlayer player, int count)
     {
+        //TODO play charging sound effect
         if (count <= 1)
         {
             MirrorHandler.teleport(player);
@@ -52,6 +53,7 @@ public class ItemMirror extends Item
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
     {
+        //TODO play charge start sound effect
         if(player.getItemInUse() == null)
         {
             player.setItemInUse(stack, getMaxItemUseDuration(stack));
@@ -62,6 +64,9 @@ public class ItemMirror extends Item
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean b)
     {
+        //TODO play sound effect when mirror is ready to use (has location, user has XP)
+        //TODO play sound effect when mirror has charged(Is able to store a location)
+        //TODO play sound effect when mirror loses charge or location (User leaves teleport area)
         //TODO add a way to disable users from using the mirror, CONFIG?
         if (entity instanceof EntityPlayer)
         {
