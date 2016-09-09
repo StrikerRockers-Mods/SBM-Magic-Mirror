@@ -2,6 +2,7 @@ package com.builtbroken.magicmirror.handler;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -18,20 +19,24 @@ public class TeleportPos
     public final int x;
     public final int y;
     public final int z;
+    public final float yaw;
+    public final float pitch;
 
     private World world;
 
     public TeleportPos(Entity e)
     {
-        this(e.worldObj.provider.dimensionId, (int)e.posX, (int)e.posY, (int)e.posZ);
+        this(e.worldObj.provider.dimensionId, (int) e.posX, (int) e.posY, (int) e.posZ, e.rotationYaw, e.rotationPitch);
     }
 
-    public TeleportPos(int dim, int x, int y, int z)
+    public TeleportPos(int dim, int x, int y, int z, float yaw, float pitch)
     {
         this.dim = dim;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.yaw = yaw;
+        this.pitch = pitch;
     }
 
     /**
@@ -55,7 +60,10 @@ public class TeleportPos
      */
     public void teleport(EntityPlayer player)
     {
-        player.addChatComponentMessage(new ChatComponentText("*Poof*"));
-        //TODO add actual teleport code
+        if (player instanceof EntityPlayerMP)
+        {
+            player.addChatComponentMessage(new ChatComponentText("*Poof*"));
+            ((EntityPlayerMP) player).playerNetServerHandler.setPlayerLocation(x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
+        }
     }
 }

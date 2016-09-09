@@ -40,10 +40,7 @@ public class MirrorHandler
         {
             userData.put(player.getUniqueID(), new EntityData(player));
         }
-        else
-        {
-            userData.get(player.getUniqueID()).update(player);
-        }
+        userData.get(player.getUniqueID()).update(player);
     }
 
 

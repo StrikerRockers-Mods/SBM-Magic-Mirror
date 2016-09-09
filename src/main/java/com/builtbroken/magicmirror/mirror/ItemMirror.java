@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
@@ -37,12 +36,27 @@ public class ItemMirror extends Item
     @Override
     public void onUsingTick(ItemStack stack, EntityPlayer player, int count)
     {
-        player.addChatComponentMessage(new ChatComponentText("C: " + count));
-        if (count >= TICKS_BEFORE_TELEPORT)
+        if (count <= 1)
         {
             MirrorHandler.teleport(player);
             player.stopUsingItem();
         }
+    }
+
+    @Override
+    public int getMaxItemUseDuration(ItemStack stack)
+    {
+        return TICKS_BEFORE_TELEPORT + 1;
+    }
+
+    @Override
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
+    {
+        if(player.getItemInUse() == null)
+        {
+            player.setItemInUse(stack, getMaxItemUseDuration(stack));
+        }
+        return stack;
     }
 
     @Override

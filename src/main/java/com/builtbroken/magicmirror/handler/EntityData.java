@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 
@@ -94,7 +95,7 @@ public class EntityData
             final boolean canSeeSky = checkCanSeeSky();
 
             //were we on the surface last tick and this tick
-            final boolean stillOnSurface = this.wasOnSurface && isOnSurface || couldSeeSky && canSeeSky;
+            final boolean stillOnSurface = this.wasOnSurface && isOnSurface && couldSeeSky && canSeeSky;
 
             //TODO reset location as soon as user is considered above ground [Timer]
 
@@ -104,12 +105,16 @@ public class EntityData
                 timeAboveGround++;
             }
             //if min time -> can't see sky -> no tp loc -> set loc
-            else if (timeAboveGround >= MIN_SURFACE_TIME && !canSeeSky && potentialTP == null)
+            else if (timeAboveGround >= MIN_SURFACE_TIME)
             {
-                potentialTP = new TeleportPos(player);
-                if (MirrorHandler.hasLocation(player))
+                player.addChatComponentMessage(new ChatComponentText("Mirror charged by the love of the sky")); //TODO replace with audio effect, with config to enable subtitles for deaf users
+                if(!canSeeSky && potentialTP == null)
                 {
-                    MirrorHandler.setTeleportLocation(player, potentialTP);
+                    potentialTP = new TeleportPos(player);
+                    if (MirrorHandler.hasLocation(player))
+                    {
+                        MirrorHandler.setTeleportLocation(player, potentialTP);
+                    }
                 }
             }
 
@@ -122,20 +127,26 @@ public class EntityData
                     MirrorHandler.setTeleportLocation(player, potentialTP);
                     reset();
                 }
-                if (timeAboveGround++ >= SURFACE_COOLDOWN)
+                if (timeOnSurfaceCooldown++ >= SURFACE_COOLDOWN)
                 {
                     timeAboveGround = 0;
+                    timeOnSurfaceCooldown = 0;
                 }
             }
             else if (timeWithoutSkyCooldown++ >= SKY_COOLDOWN)
             {
                 timeWithoutSky = 0;
+                timeWithoutSkyCooldown = 0;
                 potentialTP = null;
             }
+
+            //Update data for next run
+            wasOnSurface = isOnSurface;
+            couldSeeSky = canSeeSky;
         }
         catch (Exception e)
         {
-            if(MagicMirror.runningAsDev)
+            if (MagicMirror.runningAsDev)
             {
                 MagicMirror.logger.error("EntityData failed to update information about entity", e);
             }
@@ -144,6 +155,22 @@ public class EntityData
                 MagicMirror.logger.error("EntityData failed to update information about entity, errored with message: [ " + e.getMessage() + " ] enable dev mod for more detailed info.");
             }
         }
+        //TODO add odd effects to the mirror, for example saying its feels under used if not used after a while or lonely if the user doesn't hold it
+
+        //If not used for a long while
+        // "Mirror feels forgotten"
+        // User holds it "Mirror feels loved"
+        // User hovers over it "Mirror notices user's love"
+
+        //If not held for a long while
+        //"Mirror feels longely"
+        // User holds it "Mirror feels loved"
+        // User hovers over it "Mirror wants to be held"
+
+        //If user has a lot of mirrors
+        //"We want to be few"
+        //User holds it "I feel special"
+        //User hovers over it "There can only be one"
     }
 
     //Clears data, normally called when TP location is set
