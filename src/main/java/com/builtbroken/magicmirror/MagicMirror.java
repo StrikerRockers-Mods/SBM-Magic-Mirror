@@ -1,5 +1,6 @@
 package com.builtbroken.magicmirror;
 
+import com.builtbroken.magicmirror.handler.EntityData;
 import com.builtbroken.magicmirror.handler.MirrorHandler;
 import com.builtbroken.magicmirror.mirror.ItemMirror;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -11,8 +12,11 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 
 /** Very simple mod to help users get back to the start of a dungeon after clear it. The mod works by tracking the user's position and recording the last
  * position the user was before going underground. Then when users the mirror will teleport the user to the last recorded position.
@@ -41,9 +45,14 @@ public class MagicMirror
 
     public static ItemMirror itemMirror;
 
+    public static Configuration config;
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        config = new Configuration(new File(event.getModConfigurationDirectory(), "bbm/Magic_Mirror.cfg"));
+        config.load();
+
         //Register event
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(MirrorHandler.INSTANCE);
@@ -52,6 +61,9 @@ public class MagicMirror
         //Created item
         itemMirror = new ItemMirror();
         GameRegistry.registerItem(itemMirror, "magicMirrorSBM");
+
+        //Load configs
+        EntityData.MAX_TELEPORT_DISTANCE = config.getInt("Max_Teleport_Distance", Configuration.CATEGORY_GENERAL, EntityData.MAX_TELEPORT_DISTANCE, -1, 9999999, "Sets the max distance for the mirror to continue to save and allow teleportion");
     }
 
     @Mod.EventHandler
@@ -67,6 +79,8 @@ public class MagicMirror
         //TODO add config to tweek drop rate
         //TODO add config to disable drop rate
         //TODO monster drops (super rare, .0003) and chest drop(common, 0.15)
+
+        config.save();
     }
 
     @Mod.EventHandler

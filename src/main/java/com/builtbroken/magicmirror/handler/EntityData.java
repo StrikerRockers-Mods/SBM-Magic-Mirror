@@ -27,7 +27,7 @@ public class EntityData
     /** Minimal amount of time the user has to be on the surface for the mirror to record a location */
     public static final int MIN_SURFACE_TIME = 60 * 20; //1 min
     /** Distance in X & Z that player can travel and still teleport */
-    public static final int MAX_TELEPORT_DISTANCE = 200;
+    public static int MAX_TELEPORT_DISTANCE = 200;
 
 
     //Last tick location data
@@ -78,7 +78,7 @@ public class EntityData
             this.y = (int) player.posY;
             this.z = (int) player.posZ;
 
-            if (MirrorHandler.hasLocation(player))
+            if (MAX_TELEPORT_DISTANCE > -1 && MirrorHandler.hasLocation(player))
             {
                 TeleportPos pos = MirrorHandler.getLocation(player);
                 double distance = Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2) + Math.pow(pos.z - z, 2));
