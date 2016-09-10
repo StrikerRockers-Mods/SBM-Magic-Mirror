@@ -99,8 +99,8 @@ public class MagicMirror
         if (config.getBoolean("EnableAsDungeonLoot", Configuration.CATEGORY_GENERAL, true, "Should mirrors be found inside of dungeons as loot"))
         {
             //TODO make diamond and gold mirror super rare
-            WeightedRandomChestContent silverMirror = new WeightedRandomChestContent(itemMirror, 3, 0, 1, 1); //TODO add config to tweek drop rate
-            WeightedRandomChestContent goldMirror = new WeightedRandomChestContent(itemMirror, 4, 0, 1, 1); //TODO add config to tweek drop rate
+            WeightedRandomChestContent silverMirror = new WeightedRandomChestContent(itemMirror, 3, 0, 1, 5); //TODO add config to tweek drop rate
+            WeightedRandomChestContent goldMirror = new WeightedRandomChestContent(itemMirror, 4, 0, 1, 2); //TODO add config to tweek drop rate
             WeightedRandomChestContent diamondMirror = new WeightedRandomChestContent(itemMirror, 5, 0, 1, 1); //TODO add config to tweek drop rate
 
             ChestGenHooks.getInfo(ChestGenHooks.MINESHAFT_CORRIDOR).addItem(silverMirror);

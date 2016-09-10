@@ -118,6 +118,10 @@ public class EntityData
                 if (stillOnSurface)
                 {
                     timeAboveGround++;
+                    if(MirrorHandler.hasLocation(player) && timeAboveGround >= SURFACE_COOLDOWN)
+                    {
+                        MirrorHandler.setTeleportLocation(player, null);
+                    }
                     if (timeAboveGround == MIN_SURFACE_TIME)
                     {
                         player.addChatComponentMessage(new ChatComponentText("Mirror charged by the love of the sky"));
@@ -133,7 +137,7 @@ public class EntityData
                         potentialTP = new TeleportPos(player);
                         if (MirrorHandler.hasLocation(player))
                         {
-                            MirrorHandler.setTeleportLocation(player, potentialTP);
+                            MirrorHandler.setTeleportLocation(player, null);
                         }
                     }
                 }
