@@ -4,12 +4,14 @@ import com.builtbroken.magicmirror.MagicMirror;
 import com.builtbroken.magicmirror.handler.MirrorHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
@@ -25,12 +27,96 @@ public class ItemMirror extends Item
 {
     public static int TICKS_BEFORE_TELEPORT = 5 * 20; //5 seconds TODO load from config
 
+    @SideOnly(Side.CLIENT)
+    private IIcon silver_dirty_icon;
+
+    @SideOnly(Side.CLIENT)
+    private IIcon gold_dirty_icon;
+
+    @SideOnly(Side.CLIENT)
+    private IIcon diamond_dirty_icon;
+
+    @SideOnly(Side.CLIENT)
+    private IIcon gold_icon;
+
+    @SideOnly(Side.CLIENT)
+    private IIcon diamond_icon;
+
+    @SideOnly(Side.CLIENT)
+    private IIcon glow_icon;
+
+    @SideOnly(Side.CLIENT)
+    private IIcon shine_icon;
+
+    @SideOnly(Side.CLIENT)
+    private IIcon blank_icon;
+
     public ItemMirror()
     {
         setMaxStackSize(1);
+        setHasSubtypes(true);
         setCreativeTab(CreativeTabs.tabTools);
         setUnlocalizedName(MagicMirror.DOMAIN + ":magicMirror");
-        setTextureName(MagicMirror.DOMAIN + ":magicMirror");
+        setTextureName(MagicMirror.DOMAIN + ":Silver_Clean");
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister reg)
+    {
+        this.itemIcon = reg.registerIcon(MagicMirror.DOMAIN + ":Silver_Clean");
+        this.gold_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Gold_Clean");
+        this.diamond_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Diamond_Clean");
+
+        this.silver_dirty_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Silver_Dirty");
+        this.gold_dirty_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Gold_Dirty");
+        this.diamond_dirty_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Diamond_Dirty");
+
+        this.glow_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Glow");
+        this.shine_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Shine");
+        this.blank_icon = reg.registerIcon(MagicMirror.DOMAIN + ":blank");
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon(ItemStack stack, int renderPass, EntityPlayer player, ItemStack usingItem, int useRemaining)
+    {
+        if (renderPass == 1)
+        {
+            return shine_icon;
+        }
+        else if (renderPass == 2)
+        {
+            return glow_icon;
+        }
+        return getIconFromDamage(stack.getItemDamage());
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getRenderPasses(int metadata)
+    {
+        return 3;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getIconFromDamage(int i)
+    {
+        switch (i)
+        {
+            case 1:
+                return gold_icon;
+            case 2:
+                return diamond_icon;
+            case 3:
+                return silver_dirty_icon;
+            case 4:
+                return gold_dirty_icon;
+            case 5:
+                return diamond_dirty_icon;
+        }
+        return this.itemIcon;
     }
 
     @Override
@@ -54,7 +140,7 @@ public class ItemMirror extends Item
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
     {
         //TODO play charge start sound effect
-        if(player.getItemInUse() == null)
+        if (player.getItemInUse() == null)
         {
             player.setItemInUse(stack, getMaxItemUseDuration(stack));
         }
@@ -78,7 +164,7 @@ public class ItemMirror extends Item
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b)
     {
-        if(player.worldObj.provider.hasNoSky)
+        if (player.worldObj.provider.hasNoSky)
         {
             list.add("\u00a7c" + StatCollector.translateToLocal(getUnlocalizedName() + ".error.noSky"));
         }
@@ -100,5 +186,17 @@ public class ItemMirror extends Item
     public EnumRarity getRarity(ItemStack p_77613_1_)
     {
         return EnumRarity.rare;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void getSubItems(Item item, CreativeTabs tab, List list)
+    {
+        list.add(new ItemStack(item, 1, 0));
+        list.add(new ItemStack(item, 1, 1));
+        list.add(new ItemStack(item, 1, 2));
+        list.add(new ItemStack(item, 1, 3));
+        list.add(new ItemStack(item, 1, 4));
+        list.add(new ItemStack(item, 1, 5));
     }
 }
