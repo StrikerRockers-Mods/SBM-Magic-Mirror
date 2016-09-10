@@ -142,4 +142,13 @@ public class MirrorHandler
     {
         return userIDToMirrorLocation.get(e.getGameProfile().getId());
     }
+
+    public static int getXpTeleportCost(EntityPlayer player)
+    {
+        if(hasLocation(player))
+        {
+            return getLocation(player).getTeleportCost(player);
+        }
+        return 0;
+    }
 }

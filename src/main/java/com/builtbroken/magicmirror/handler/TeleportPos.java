@@ -71,4 +71,9 @@ public class TeleportPos
             ((EntityPlayerMP) player).playerNetServerHandler.setPlayerLocation(x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
         }
     }
+
+    public int getTeleportCost(EntityPlayer player)
+    {
+        return 0;
+    }
 }

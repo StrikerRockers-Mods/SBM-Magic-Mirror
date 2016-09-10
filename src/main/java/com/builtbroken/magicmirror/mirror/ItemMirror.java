@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -79,7 +80,7 @@ public class ItemMirror extends Item
 
     @Override
     @SideOnly(Side.CLIENT)
-    public IIcon getIcon(ItemStack stack, int renderPass, EntityPlayer player, ItemStack usingItem, int useRemaining)
+    public IIcon getIcon(ItemStack stack, int renderPass)
     {
         if (renderPass == 1)
         {
@@ -93,10 +94,23 @@ public class ItemMirror extends Item
     }
 
     @Override
+    public IIcon getIcon(ItemStack stack, int renderPass, EntityPlayer player, ItemStack usingItem, int useRemaining)
+    {
+        return getIconFromDamage(stack.getItemDamage());
+    }
+
+    @Override
     @SideOnly(Side.CLIENT)
     public int getRenderPasses(int metadata)
     {
         return 3;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean requiresMultipleRenderPasses()
+    {
+        return true;
     }
 
     @Override
@@ -139,12 +153,36 @@ public class ItemMirror extends Item
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
     {
-        //TODO play charge start sound effect
-        if (player.getItemInUse() == null)
+        if (!world.isRemote)
         {
-            player.setItemInUse(stack, getMaxItemUseDuration(stack));
+            if (canTeleport(player))
+            {
+                //TODO play charge start sound effect
+                if (player.getItemInUse() == null)
+                {
+                    player.setItemInUse(stack, getMaxItemUseDuration(stack));
+                }
+            }
+            else if (!MirrorHandler.hasLocation(player))
+            {
+                player.addChatComponentMessage(new ChatComponentTranslation("item.smbmagicmirror:magicMirror.error.noLocation"));
+            }
+            else if (MirrorHandler.getXpTeleportCost(player) > player.experienceTotal)
+            {
+                player.addChatComponentMessage(new ChatComponentTranslation("item.smbmagicmirror:magicMirror.error.xp", MirrorHandler.getXpTeleportCost(player) - player.experienceTotal, MirrorHandler.getXpTeleportCost(player)));
+            }
         }
         return stack;
+    }
+
+    public boolean canTeleport(EntityPlayer player)
+    {
+        int xp = MirrorHandler.getXpTeleportCost(player);
+        if (xp > 0 && (!MagicMirror.USE_XP || player.capabilities.isCreativeMode || player.experienceTotal >= xp))
+        {
+            return true;
+        }
+        return false;
     }
 
     @Override
