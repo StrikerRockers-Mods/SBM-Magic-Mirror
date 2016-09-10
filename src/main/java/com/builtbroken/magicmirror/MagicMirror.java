@@ -3,6 +3,7 @@ package com.builtbroken.magicmirror;
 import com.builtbroken.magicmirror.handler.EntityData;
 import com.builtbroken.magicmirror.handler.MirrorHandler;
 import com.builtbroken.magicmirror.mirror.ItemMirror;
+import com.builtbroken.magicmirror.network.PacketManager;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -60,6 +61,8 @@ public class MagicMirror
     /** Config object used to load settings */
     public static Configuration config;
 
+    public static PacketManager packetHandler;
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -83,7 +86,7 @@ public class MagicMirror
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
-
+        packetHandler = new PacketManager(DOMAIN);
     }
 
     @Mod.EventHandler

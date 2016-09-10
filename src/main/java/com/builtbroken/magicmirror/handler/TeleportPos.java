@@ -1,5 +1,6 @@
 package com.builtbroken.magicmirror.handler;
 
+import com.builtbroken.magicmirror.MagicMirror;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -72,8 +73,37 @@ public class TeleportPos
         }
     }
 
-    public int getTeleportCost(EntityPlayer player)
+    /**
+     * Cost in XP to teleport to the location
+     * @param player
+     * @return
+     */
+    public float getTeleportCost(EntityPlayer player)
     {
-        return 0;
+        if(MagicMirror.FLAT_RATE)
+        {
+            return MagicMirror.XP_COST;
+        }
+        return getDistanceInt(player) * MagicMirror.XP_COST;
+    }
+
+    /**
+     * Distance to the location from the entity
+     * @param entity
+     * @return
+     */
+    public int getDistanceInt(Entity entity)
+    {
+        return (int)Math.sqrt(Math.pow(entity.posX - x, 2) + Math.pow(entity.posY - y, 2) + Math.pow(entity.posZ - z, 2));
+    }
+
+    /**
+     * Distance to the location from the entity
+     * @param entity
+     * @return
+     */
+    public double getDistance(Entity entity)
+    {
+        return Math.sqrt(Math.pow(entity.posX - x, 2) + Math.pow(entity.posY - y, 2) + Math.pow(entity.posZ - z, 2));
     }
 }

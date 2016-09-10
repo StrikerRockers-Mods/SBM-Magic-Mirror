@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
@@ -26,7 +27,11 @@ import java.util.List;
  */
 public class ItemMirror extends Item
 {
-    public static int TICKS_BEFORE_TELEPORT = 5 * 20; //5 seconds TODO load from config
+    public static int TICKS_BEFORE_TELEPORT = 5 * 20; //5 seconds
+    /** CLIENT DATA, how much XP it costs to teleport */
+    public static int currentXPCostToTeleport = 0;
+    /** CLIENT DATA,  0 = nothing, 1 = can be activated, 2 = is charged / will record data, 3 = is charged & can be activated*/
+    public static byte currentMirrorState = 0;
 
     @SideOnly(Side.CLIENT)
     private IIcon silver_dirty_icon;
@@ -169,20 +174,25 @@ public class ItemMirror extends Item
             }
             else if (MirrorHandler.getXpTeleportCost(player) > player.experienceTotal)
             {
-                player.addChatComponentMessage(new ChatComponentTranslation("item.smbmagicmirror:magicMirror.error.xp", MirrorHandler.getXpTeleportCost(player) - player.experienceTotal, MirrorHandler.getXpTeleportCost(player)));
+                String translation = StatCollector.translateToLocal("item.smbmagicmirror:magicMirror.error.xp");
+                translation = translation.replace("%1", "" + (MirrorHandler.getXpTeleportCost(player) - player.experienceTotal));
+                translation = translation.replace("%2", "" + MirrorHandler.getXpTeleportCost(player));
+                player.addChatComponentMessage(new ChatComponentText(translation));
             }
         }
         return stack;
     }
 
+    /**
+     * Can the user teleport
+     *
+     * @param player
+     * @return
+     */
     public boolean canTeleport(EntityPlayer player)
     {
-        int xp = MirrorHandler.getXpTeleportCost(player);
-        if (xp > 0 && (!MagicMirror.USE_XP || player.capabilities.isCreativeMode || player.experienceTotal >= xp))
-        {
-            return true;
-        }
-        return false;
+        float xp = MirrorHandler.getXpTeleportCost(player);
+        return (int) xp > 0 && (!MagicMirror.USE_XP || player.capabilities.isCreativeMode || player.experienceTotal >= xp);
     }
 
     @Override
