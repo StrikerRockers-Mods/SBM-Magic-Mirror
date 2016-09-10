@@ -40,7 +40,7 @@ public class MagicMirror
     @Mod.Instance(DOMAIN)
     public static MagicMirror INSTANCE;
 
-    @SidedProxy(clientSide = "com.builtbroken.magicmirror.ClientProxy", serverSide = "com.builtbroken.magicmirror.ServerProxy")
+    @SidedProxy(clientSide = "com.builtbroken.magicmirror.ClientProxy", serverSide = "com.builtbroken.magicmirror.CommonProxy")
     public static CommonProxy proxy;
 
     public static ItemMirror itemMirror;
