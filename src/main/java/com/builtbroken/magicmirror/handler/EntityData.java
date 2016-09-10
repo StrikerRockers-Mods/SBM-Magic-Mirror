@@ -103,11 +103,16 @@ public class EntityData
             if (stillOnSurface)
             {
                 timeAboveGround++;
+                if(timeAboveGround == MIN_SURFACE_TIME)
+                {
+                    player.addChatComponentMessage(new ChatComponentText("Mirror charged by the love of the sky"));
+                    //TODO Randomize message
+                    //TODO add command to enable/disable message
+                }
             }
             //if min time -> can't see sky -> no tp loc -> set loc
             else if (timeAboveGround >= MIN_SURFACE_TIME)
             {
-                player.addChatComponentMessage(new ChatComponentText("Mirror charged by the love of the sky")); //TODO replace with audio effect, with config to enable subtitles for deaf users
                 if(!canSeeSky && potentialTP == null)
                 {
                     potentialTP = new TeleportPos(player);

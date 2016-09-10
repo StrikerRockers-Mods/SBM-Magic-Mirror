@@ -1,5 +1,5 @@
 item.smbmagicmirror:magicMirror.name=Magic Mirror
-item.smbmagicmirror:magicMirror.desc=Records your last position above ground and allows you to teleport to it at a cost of XP
+item.smbmagicmirror:magicMirror.desc=Records your last position,above ground and allows you,to teleport to it for XP
 item.smbmagicmirror:magicMirror.location=Your location is %1x %2y %3z and will cost %4 xp to teleport
 item.smbmagicmirror:magicMirror.location.set=Mirror location set to %1x %2y %3z
 item.smbmagicmirror:magicMirror.error.noLocation=No location stored.

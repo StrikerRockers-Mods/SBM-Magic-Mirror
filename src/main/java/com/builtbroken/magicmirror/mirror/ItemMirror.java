@@ -166,11 +166,28 @@ public class ItemMirror extends Item
     {
         if (player.worldObj.provider.hasNoSky)
         {
-            list.add("\u00a7c" + StatCollector.translateToLocal(getUnlocalizedName() + ".error.noSky"));
+            sep("\u00a7c", StatCollector.translateToLocal(getUnlocalizedName() + ".error.noSky"), list);
         }
         else
         {
-            list.add(StatCollector.translateToLocal(getUnlocalizedName() + ".desc"));
+            sep(StatCollector.translateToLocal(getUnlocalizedName() + ".desc"), list);
+        }
+    }
+
+    public static void sep(String translation, List list)
+    {
+        sep(null, translation, list);
+    }
+
+    public static void sep(String color, String translation, List list)
+    {
+        if (translation != null && !translation.isEmpty())
+        {
+            String[] strings = translation.split(",");
+            for (String s : strings)
+            {
+                list.add((color != null ? color : "") + s.trim());
+            }
         }
     }
 
