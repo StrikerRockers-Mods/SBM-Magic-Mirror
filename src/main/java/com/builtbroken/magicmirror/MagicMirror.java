@@ -64,6 +64,7 @@ public class MagicMirror
 
         //Load configs
         EntityData.MAX_TELEPORT_DISTANCE = config.getInt("Max_Teleport_Distance", Configuration.CATEGORY_GENERAL, EntityData.MAX_TELEPORT_DISTANCE, -1, 9999999, "Sets the max distance for the mirror to continue to save and allow teleportion");
+        ItemMirror.TICKS_BEFORE_TELEPORT = config.getInt("Activation_Time", Configuration.CATEGORY_GENERAL, ItemMirror.TICKS_BEFORE_TELEPORT, -1, 1200, "How long in ticks the user has to wait before teleporting");
     }
 
     @Mod.EventHandler

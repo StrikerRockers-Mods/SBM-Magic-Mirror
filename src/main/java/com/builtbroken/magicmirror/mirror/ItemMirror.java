@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class ItemMirror extends Item
 {
-    public static final int TICKS_BEFORE_TELEPORT = 5 * 20; //5 seconds TODO load from config
+    public static int TICKS_BEFORE_TELEPORT = 5 * 20; //5 seconds TODO load from config
 
     public ItemMirror()
     {
