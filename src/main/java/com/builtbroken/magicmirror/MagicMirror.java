@@ -12,6 +12,8 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.util.WeightedRandomChestContent;
+import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
@@ -92,10 +94,26 @@ public class MagicMirror
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
-        //TODO add loot drop
-        //TODO add config to tweek drop rate
-        //TODO add config to disable drop rate
         //TODO monster drops (super rare, .0003) and chest drop(common, 0.15)
+
+        if (config.getBoolean("EnableAsDungeonLoot", Configuration.CATEGORY_GENERAL, true, "Should mirrors be found inside of dungeons as loot"))
+        {
+            //TODO make diamond and gold mirror super rare
+            WeightedRandomChestContent silverMirror = new WeightedRandomChestContent(itemMirror, 3, 0, 1, 1); //TODO add config to tweek drop rate
+            WeightedRandomChestContent goldMirror = new WeightedRandomChestContent(itemMirror, 4, 0, 1, 1); //TODO add config to tweek drop rate
+            WeightedRandomChestContent diamondMirror = new WeightedRandomChestContent(itemMirror, 5, 0, 1, 1); //TODO add config to tweek drop rate
+
+            ChestGenHooks.getInfo(ChestGenHooks.MINESHAFT_CORRIDOR).addItem(silverMirror);
+            ChestGenHooks.getInfo(ChestGenHooks.PYRAMID_DESERT_CHEST).addItem(silverMirror);
+            ChestGenHooks.getInfo(ChestGenHooks.PYRAMID_JUNGLE_CHEST).addItem(silverMirror);
+            ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_CORRIDOR).addItem(silverMirror);
+            ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_LIBRARY).addItem(silverMirror);
+            ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_CROSSING).addItem(silverMirror);
+            ChestGenHooks.getInfo(ChestGenHooks.DUNGEON_CHEST).addItem(silverMirror);
+
+            ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_LIBRARY).addItem(goldMirror);
+            ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_LIBRARY).addItem(diamondMirror);
+        }
 
         config.save();
     }
