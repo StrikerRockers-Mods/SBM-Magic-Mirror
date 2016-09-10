@@ -1,10 +1,12 @@
 package com.builtbroken.magicmirror.handler;
 
 import com.builtbroken.magicmirror.MagicMirror;
+import com.builtbroken.magicmirror.network.PacketClientUpdate;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
@@ -52,7 +54,9 @@ public class EntityData
     private TeleportPos potentialTP;
 
     /** Used to prevent the data from updating too often */
-    private Long lastTickTime;
+    private Long lastTickTime = 0L;
+
+    private int tick = 0;
 
     public EntityData(Entity e)
     {
@@ -75,8 +79,13 @@ public class EntityData
     public void update(EntityPlayer player)
     {
         //Ensure we only update once a tick, Patch to fix if user has several mirrors in inventory
-        if(lastTickTime == 0 || (System.currentTimeMillis() - lastTickTime) >= 50)
+        if (lastTickTime == 0 || (System.currentTimeMillis() - lastTickTime) >= 50)
         {
+            tick++;
+            if (tick + 1 >= Integer.MAX_VALUE)
+            {
+                tick = 0;
+            }
             try
             {
                 //Update position
@@ -154,6 +163,30 @@ public class EntityData
                 //Update data for next run
                 wasOnSurface = isOnSurface;
                 couldSeeSky = canSeeSky;
+
+                //TODO add odd effects to the mirror, for example saying its feels under used if not used after a while or lonely if the user doesn't hold it
+
+                //If not used for a long while
+                // "Mirror feels forgotten"
+                // User holds it "Mirror feels loved"
+                // User hovers over it "Mirror notices user's love"
+
+                //If not held for a long while
+                //"Mirror feels longely"
+                // User holds it "Mirror feels loved"
+                // User hovers over it "Mirror wants to be held"
+
+                //If user has a lot of mirrors
+                //"We want to be few"
+                //User holds it "I feel special"
+                //User hovers over it "There can only be one"
+
+
+                //Send packet update to user
+                if (player instanceof EntityPlayerMP && (tick == 1 || tick % 5 == 0))
+                {
+                    MagicMirror.packetHandler.sendToPlayer(new PacketClientUpdate((int) MirrorHandler.getXpTeleportCost(player), timeAboveGround >= MIN_SURFACE_TIME, MirrorHandler.hasLocation(player)), (EntityPlayerMP) player);
+                }
             }
             catch (Exception e)
             {
@@ -166,22 +199,6 @@ public class EntityData
                     MagicMirror.logger.error("EntityData failed to update information about entity, errored with message: [ " + e.getMessage() + " ] enable dev mod for more detailed info.");
                 }
             }
-            //TODO add odd effects to the mirror, for example saying its feels under used if not used after a while or lonely if the user doesn't hold it
-
-            //If not used for a long while
-            // "Mirror feels forgotten"
-            // User holds it "Mirror feels loved"
-            // User hovers over it "Mirror notices user's love"
-
-            //If not held for a long while
-            //"Mirror feels longely"
-            // User holds it "Mirror feels loved"
-            // User hovers over it "Mirror wants to be held"
-
-            //If user has a lot of mirrors
-            //"We want to be few"
-            //User holds it "I feel special"
-            //User hovers over it "There can only be one"
             lastTickTime = System.currentTimeMillis();
         }
     }

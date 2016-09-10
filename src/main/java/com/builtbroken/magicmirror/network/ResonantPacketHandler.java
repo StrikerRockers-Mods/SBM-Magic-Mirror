@@ -1,7 +1,5 @@
 package com.builtbroken.magicmirror.network;
 
-import com.builtbroken.mc.core.Engine;
-import com.builtbroken.mc.core.network.packet.AbstractPacket;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import io.netty.channel.ChannelHandler;
@@ -25,7 +23,7 @@ public class ResonantPacketHandler extends SimpleChannelInboundHandler<Packet>
 		switch (FMLCommonHandler.instance().getEffectiveSide())
 		{
 			case CLIENT:
-				packet.handleClientSide(Engine.proxy.getClientPlayer());
+				packet.handleClientSide();
 				break;
 			case SERVER:
 				packet.handleServerSide(((NetHandlerPlayServer) netHandler).playerEntity);

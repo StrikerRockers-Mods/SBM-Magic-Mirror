@@ -89,11 +89,11 @@ public class ItemMirror extends Item
     {
         if (renderPass == 1)
         {
-            return shine_icon;
+            return currentMirrorState == 2 || currentMirrorState == 3 ? shine_icon : blank_icon;
         }
         else if (renderPass == 2)
         {
-            return glow_icon;
+            return currentMirrorState == 1 || currentMirrorState == 3 ? glow_icon : blank_icon;
         }
         return getIconFromDamage(stack.getItemDamage());
     }

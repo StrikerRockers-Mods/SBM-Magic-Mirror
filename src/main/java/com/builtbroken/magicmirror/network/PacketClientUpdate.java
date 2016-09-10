@@ -2,7 +2,6 @@ package com.builtbroken.magicmirror.network;
 
 import com.builtbroken.magicmirror.mirror.ItemMirror;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
 
 /**
  * Updates data to the client about mirror usage
@@ -38,7 +37,7 @@ public class PacketClientUpdate extends Packet
     }
 
     @Override
-    public void handleClientSide(EntityPlayer player)
+    public void handleClientSide()
     {
         ItemMirror.currentXPCostToTeleport = xpCost;
         ItemMirror.currentMirrorState = state;

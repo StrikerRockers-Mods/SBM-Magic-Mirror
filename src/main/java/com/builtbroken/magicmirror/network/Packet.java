@@ -16,7 +16,7 @@ public class Packet
 
     }
 
-    public void handleClientSide(EntityPlayer player)
+    public void handleClientSide()
     {
 
     }
