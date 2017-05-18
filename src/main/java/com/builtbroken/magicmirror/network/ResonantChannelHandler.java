@@ -1,7 +1,7 @@
 package com.builtbroken.magicmirror.network;
 
 import com.builtbroken.magicmirror.MagicMirror;
-import cpw.mods.fml.common.network.FMLIndexedMessageToMessageCodec;
+import net.minecraftforge.fml.common.network.FMLIndexedMessageToMessageCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
