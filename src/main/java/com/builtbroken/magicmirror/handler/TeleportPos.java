@@ -4,9 +4,8 @@ import com.builtbroken.magicmirror.MagicMirror;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 
 /**
  * Stores the location to teleport the user to
@@ -16,7 +15,6 @@ import net.minecraftforge.common.DimensionManager;
  */
 public class TeleportPos
 {
-    public final int dim;
     public final int x;
     public final int y;
     public final int z;
@@ -27,12 +25,11 @@ public class TeleportPos
 
     public TeleportPos(Entity e)
     {
-        this(e.worldObj.provider.dimensionId, (int) e.posX, (int) e.posY, (int) e.posZ, e.rotationYaw, e.rotationPitch);
+        this((int) e.posX, (int) e.posY, (int) e.posZ, e.rotationYaw, e.rotationPitch);
     }
 
-    public TeleportPos(int dim, int x, int y, int z, float yaw, float pitch)
+    public TeleportPos(int x, int y, int z, float yaw, float pitch)
     {
-        this.dim = dim;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -40,19 +37,6 @@ public class TeleportPos
         this.pitch = pitch;
     }
 
-    /**
-     * Gets the world object
-     *
-     * @return world
-     */
-    public World world()
-    {
-        if (world == null)
-        {
-            world = DimensionManager.getWorld(dim);
-        }
-        return world;
-    }
 
     /**
      * Triggers the teleport for the user
@@ -68,8 +52,8 @@ public class TeleportPos
         //TODO use different sounds for leave and enter
         if (player instanceof EntityPlayerMP)
         {
-            player.addChatComponentMessage(new ChatComponentText("*Poof*"));
-            ((EntityPlayerMP) player).playerNetServerHandler.setPlayerLocation(x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
+            player.sendStatusMessage(new TextComponentString("*Poof*"),true);
+            player.setPositionAndRotation(x+0.5,y+0.5,z+0.5,yaw,pitch);
         }
     }
 

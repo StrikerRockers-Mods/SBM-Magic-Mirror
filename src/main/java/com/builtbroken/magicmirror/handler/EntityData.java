@@ -1,15 +1,21 @@
 package com.builtbroken.magicmirror.handler;
 
 import com.builtbroken.magicmirror.MagicMirror;
+import com.builtbroken.magicmirror.handler.capability.IMirrorData;
 import com.builtbroken.magicmirror.network.PacketClientUpdate;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+
+import static com.builtbroken.magicmirror.handler.capability.MirrorStorage.CAPABILITY_MIRROR;
 
 /**
  * Stores data about the entity in order to track movement, time on surface, etc....
@@ -37,6 +43,7 @@ public class EntityData
     public int x;
     public int y;
     public int z;
+    public BlockPos blockPos = new BlockPos(x,y,z);
 
     /** Amount of time user has been on surface */
     public int timeAboveGround;
@@ -60,7 +67,7 @@ public class EntityData
 
     public EntityData(Entity e)
     {
-        this(e.worldObj, (int) e.posX, (int) e.posY, (int) e.posZ);
+        this(e.world, (int) e.posX, (int) e.posY, (int) e.posZ);
     }
 
     public EntityData(World world, int x, int y, int z)
@@ -69,6 +76,35 @@ public class EntityData
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public static IMirrorData getHandler(EntityPlayer entity) {
+
+        if (entity.hasCapability(CAPABILITY_MIRROR, EnumFacing.DOWN))
+            return entity.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN);
+        return null;
+    }
+
+    //Clears data, normally called when TP location is set
+    private void reset()
+    {
+        timeAboveGround = 0;
+        timeWithoutSky = 0;
+        timeOnSurfaceCooldown = 0;
+        timeWithoutSkyCooldown = 0;
+        potentialTP = null;
+    }
+
+    /**
+     * Checks if the user is on the surface, does not
+     * check if world data was set before being called
+     * so can NPE
+     *
+     * @return true if Y level is greater than world's horizon value
+     */
+    public boolean checkOnSurface()
+    {
+        return y >= world.provider.getHorizon();
     }
 
     /**
@@ -93,15 +129,15 @@ public class EntityData
                 this.y = (int) player.posY;
                 this.z = (int) player.posZ;
 
-                if (MAX_TELEPORT_DISTANCE > -1 && MirrorHandler.hasLocation(player))
+                if (MAX_TELEPORT_DISTANCE > -1 && getHandler(player).hasLocation())
                 {
-                    TeleportPos pos = MirrorHandler.getLocation(player);
+                    TeleportPos pos = getHandler(player).getLocation();
                     double distance = Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2) + Math.pow(pos.z - z, 2));
                     if (distance >= MAX_TELEPORT_DISTANCE)
                     {
                         //TODO add config to disable this action
-                        MirrorHandler.setTeleportLocation(player, null);
-                        player.addChatComponentMessage(new ChatComponentTranslation("item.smbmagicmirror:magicMirror.error.link.broken.distance"));
+                        player.getCapability(CAPABILITY_MIRROR,EnumFacing.DOWN).setLocation(null);
+                        player.sendStatusMessage(new TextComponentTranslation("item.smbmagicmirror:magicmirror.error.link.broken.distance"),true);
                     }
                 }
 
@@ -118,13 +154,13 @@ public class EntityData
                 if (stillOnSurface)
                 {
                     timeAboveGround++;
-                    if(MirrorHandler.hasLocation(player) && timeAboveGround >= SURFACE_COOLDOWN)
+                    if(getHandler(player).hasLocation() && timeAboveGround >= SURFACE_COOLDOWN)
                     {
-                        MirrorHandler.setTeleportLocation(player, null);
+                        getHandler(player).setLocation(player,null);
                     }
                     if (timeAboveGround == MIN_SURFACE_TIME)
                     {
-                        player.addChatComponentMessage(new ChatComponentText("Mirror charged by the love of the sky"));
+                        player.sendStatusMessage(new TextComponentString("Mirror charged by the love of the sky"),true);
                         //TODO Randomize message
                         //TODO add command to enable/disable message
                     }
@@ -135,9 +171,9 @@ public class EntityData
                     if (!canSeeSky && potentialTP == null)
                     {
                         potentialTP = new TeleportPos(player);
-                        if (MirrorHandler.hasLocation(player))
+                        if (getHandler(player).hasLocation())
                         {
-                            MirrorHandler.setTeleportLocation(player, null);
+                            getHandler(player).setLocation(player,null);
                         }
                     }
                 }
@@ -148,7 +184,7 @@ public class EntityData
                     timeWithoutSky++;
                     if (potentialTP != null && timeWithoutSky >= TP_SET_DELAY)
                     {
-                        MirrorHandler.setTeleportLocation(player, potentialTP);
+                        getHandler(player).setLocation(player,potentialTP);
                         reset();
                     }
                     if (timeOnSurfaceCooldown++ >= SURFACE_COOLDOWN)
@@ -186,10 +222,11 @@ public class EntityData
                 //User hovers over it "There can only be one"
 
 
-                //Send packet update to user
+                //Send packet update to usernew BlockPos(x,y,z)
                 if (player instanceof EntityPlayerMP && (tick == 1 || tick % 5 == 0))
                 {
-                    MagicMirror.packetHandler.sendToPlayer(new PacketClientUpdate((int) MirrorHandler.getXpTeleportCost(player), timeAboveGround >= MIN_SURFACE_TIME, MirrorHandler.hasLocation(player)), (EntityPlayerMP) player);
+                    MagicMirror.network.sendTo(new PacketClientUpdate((int) getHandler(player).getXpTeleportCost(player), timeAboveGround >= MIN_SURFACE_TIME, getHandler(player).hasLocation()),(EntityPlayerMP)player);
+
                 }
             }
             catch (Exception e)
@@ -207,31 +244,9 @@ public class EntityData
         }
     }
 
-    //Clears data, normally called when TP location is set
-    private void reset()
-    {
-        timeAboveGround = 0;
-        timeWithoutSky = 0;
-        timeOnSurfaceCooldown = 0;
-        timeWithoutSkyCooldown = 0;
-        potentialTP = null;
-    }
-
-    /**
-     * Checks if the user is on the surface, does not
-     * check if world data was set before being called
-     * so can NPE
-     *
-     * @return true if Y level is greater than world's horizon value
-     */
-    public boolean checkOnSurface()
-    {
-        return y >= world.provider.getHorizon();
-    }
-
     public boolean checkCanSeeSky()
     {
-        return !world.provider.hasNoSky && (world.canBlockSeeTheSky(x, y, z) || doRayCheckSky());
+        return !world.provider.hasSkyLight() && (world.canBlockSeeSky(blockPos) || doRayCheckSky());
     }
 
     //Does a basic check to see if there is a solid block above us
@@ -240,8 +255,9 @@ public class EntityData
         for (int y = this.y; y <= world.getActualHeight(); y++)
         {
             //TODO check if block is full
-            Block block = world.getBlock(x, y, z);
-            if (block.getMaterial() != Material.air && block.isOpaqueCube())
+            IBlockState state = world.getBlockState(blockPos);
+            Block block = state.getBlock();
+            if (block.getMaterial(state) != Material.AIR && block.isOpaqueCube(state))
             {
                 return false;
             }

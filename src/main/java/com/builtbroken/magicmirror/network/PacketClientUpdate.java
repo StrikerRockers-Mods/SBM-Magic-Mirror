@@ -2,11 +2,15 @@ package com.builtbroken.magicmirror.network;
 
 import com.builtbroken.magicmirror.mirror.ItemMirror;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Updates data to the client about mirror usage
  */
-public class PacketClientUpdate extends Packet
+public class PacketClientUpdate implements IMessage
 {
     int xpCost = 0;
     byte state = 0;
@@ -23,23 +27,27 @@ public class PacketClientUpdate extends Packet
     }
 
     @Override
-    public void write(ByteBuf buffer)
-    {
-        buffer.writeInt(xpCost);
-        buffer.writeByte(state);
+    public void fromBytes(ByteBuf buf) {
+        xpCost = buf.readInt();
+        state = buf.readByte();
     }
 
     @Override
-    public void read(ByteBuf buffer)
-    {
-        xpCost = buffer.readInt();
-        state = buffer.readByte();
+    public void toBytes(ByteBuf buf) {
+        buf.writeInt(xpCost);
+        buf.writeByte(state);
     }
 
-    @Override
-    public void handleClientSide()
+    public static class Handler implements IMessageHandler<PacketClientUpdate, IMessage>
     {
-        ItemMirror.currentXPCostToTeleport = xpCost;
-        ItemMirror.currentMirrorState = state;
+        @Override
+        public IMessage onMessage(PacketClientUpdate message, MessageContext ctx) {
+            Minecraft.getMinecraft().addScheduledTask(() ->
+            {
+                ItemMirror.currentXPCostToTeleport= message.xpCost;
+                ItemMirror.currentMirrorState=message.state;
+            });
+            return null;
+        }
     }
 }

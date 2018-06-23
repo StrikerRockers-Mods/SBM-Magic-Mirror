@@ -2,22 +2,26 @@ package com.builtbroken.magicmirror.mirror;
 
 import com.builtbroken.magicmirror.MagicMirror;
 import com.builtbroken.magicmirror.handler.MirrorHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import com.builtbroken.magicmirror.handler.capability.IMirrorData;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.*;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
+
+import static com.builtbroken.magicmirror.MagicMirror.proxy;
+import static com.builtbroken.magicmirror.handler.capability.MirrorStorage.CAPABILITY_MIRROR;
 
 /**
  * Item class for the basic magic mirror
@@ -33,120 +37,45 @@ public class ItemMirror extends Item
     /** CLIENT DATA,  0 = nothing, 1 = can be activated, 2 = is charged / will record data, 3 = is charged & can be activated*/
     public static byte currentMirrorState = 0;
 
-    @SideOnly(Side.CLIENT)
-    private IIcon silver_dirty_icon;
-
-    @SideOnly(Side.CLIENT)
-    private IIcon gold_dirty_icon;
-
-    @SideOnly(Side.CLIENT)
-    private IIcon diamond_dirty_icon;
-
-    @SideOnly(Side.CLIENT)
-    private IIcon gold_icon;
-
-    @SideOnly(Side.CLIENT)
-    private IIcon diamond_icon;
-
-    @SideOnly(Side.CLIENT)
-    private IIcon glow_icon;
-
-    @SideOnly(Side.CLIENT)
-    private IIcon shine_icon;
-
-    @SideOnly(Side.CLIENT)
-    private IIcon blank_icon;
-
     public ItemMirror()
     {
         setMaxStackSize(1);
         setHasSubtypes(true);
-        setCreativeTab(CreativeTabs.tabTools);
-        setUnlocalizedName(MagicMirror.DOMAIN + ":magicMirror");
-        setTextureName(MagicMirror.DOMAIN + ":Silver_Clean");
+        setCreativeTab(CreativeTabs.TOOLS);
+        setUnlocalizedName(MagicMirror.DOMAIN + ":magicmirror");
+        setRegistryName(MagicMirror.DOMAIN + ":magicmirror");
+        proxy.registerItemRenderer(this,0,"silver");
+        proxy.registerItemRenderer(this,1,"gold");
+        proxy.registerItemRenderer(this,2,"diamond");
+        proxy.registerItemRenderer(this,3,"silver_dirty");
+        proxy.registerItemRenderer(this,4,"gold_dirty");
+        proxy.registerItemRenderer(this,5,"diamond_dirty");
+    }
+
+    public static IMirrorData getHandler(EntityPlayer entity) {
+
+        if (entity.hasCapability(CAPABILITY_MIRROR, EnumFacing.DOWN))
+            return entity.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN);
+        return null;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IIconRegister reg)
-    {
-        this.itemIcon = reg.registerIcon(MagicMirror.DOMAIN + ":Silver_Clean");
-        this.gold_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Gold_Clean");
-        this.diamond_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Diamond_Clean");
-
-        this.silver_dirty_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Silver_Dirty");
-        this.gold_dirty_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Gold_Dirty");
-        this.diamond_dirty_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Diamond_Dirty");
-
-        this.glow_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Glow");
-        this.shine_icon = reg.registerIcon(MagicMirror.DOMAIN + ":Shine");
-        this.blank_icon = reg.registerIcon(MagicMirror.DOMAIN + ":blank");
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIcon getIcon(ItemStack stack, int renderPass)
-    {
-        if (renderPass == 1)
-        {
-            return currentMirrorState == 2 || currentMirrorState == 3 ? shine_icon : blank_icon;
-        }
-        else if (renderPass == 2)
-        {
-            return currentMirrorState == 1 || currentMirrorState == 3 ? glow_icon : blank_icon;
-        }
-        return getIconFromDamage(stack.getItemDamage());
-    }
-
-    @Override
-    public IIcon getIcon(ItemStack stack, int renderPass, EntityPlayer player, ItemStack usingItem, int useRemaining)
-    {
-        return getIconFromDamage(stack.getItemDamage());
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public int getRenderPasses(int metadata)
-    {
-        return 3;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public boolean requiresMultipleRenderPasses()
-    {
-        return true;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIcon getIconFromDamage(int i)
-    {
+    public String getUnlocalizedName(ItemStack stack) {
+        int i = stack.getMetadata();
         switch (i)
         {
             case 1:
-                return gold_icon;
+                return "gold_icon";
             case 2:
-                return diamond_icon;
+                return "diamond_icon";
             case 3:
-                return silver_dirty_icon;
+                return "silver_dirty_icon";
             case 4:
-                return gold_dirty_icon;
+                return "gold_dirty_icon";
             case 5:
-                return diamond_dirty_icon;
+                return "diamond_dirty_icon";
         }
-        return this.itemIcon;
-    }
-
-    @Override
-    public void onUsingTick(ItemStack stack, EntityPlayer player, int count)
-    {
-        //TODO play charging sound effect
-        if (count <= 1)
-        {
-            MirrorHandler.teleport(player);
-            player.stopUsingItem();
-        }
+        return "silver_clean";
     }
 
     @Override
@@ -156,43 +85,46 @@ public class ItemMirror extends Item
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
-    {
-        if (!world.isRemote)
+    public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
+        //TODO play charging sound effect
+        if (count <= 1)
         {
-            if (canTeleport(player))
-            {
-                //TODO play charge start sound effect
-                if (player.getItemInUse() == null)
-                {
-                    player.setItemInUse(stack, getMaxItemUseDuration(stack));
-                }
-            }
-            else if (!MirrorHandler.hasLocation(player))
-            {
-                player.addChatComponentMessage(new ChatComponentTranslation("item.smbmagicmirror:magicMirror.error.noLocation"));
-            }
-            else if (MirrorHandler.getXpTeleportCost(player) > player.experienceTotal)
-            {
-                String translation = StatCollector.translateToLocal("item.smbmagicmirror:magicMirror.error.xp");
-                translation = translation.replace("%1", "" + (MirrorHandler.getXpTeleportCost(player) - player.experienceTotal));
-                translation = translation.replace("%2", "" + MirrorHandler.getXpTeleportCost(player));
-                player.addChatComponentMessage(new ChatComponentText(translation));
-            }
+            MirrorHandler.teleport((EntityPlayer)player);
+            player.stopActiveHand();
         }
-        return stack;
     }
 
-    /**
-     * Can the user teleport
-     *
-     * @param player
-     * @return
-     */
-    public boolean canTeleport(EntityPlayer player)
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        float xp = MirrorHandler.getXpTeleportCost(player);
-        return (int) xp > 0 && (!MagicMirror.USE_XP || player.capabilities.isCreativeMode || player.experienceTotal >= xp);
+        if (!worldIn.isRemote)
+        {
+            if (canTeleport(playerIn))
+            {
+                //TODO play charge start sound effect
+                if (playerIn.getHeldItem(handIn) == ItemStack.EMPTY)
+                {
+                        playerIn.setActiveHand(handIn);
+                }
+            }
+            else if (!getHandler(playerIn).hasLocation())
+            {
+                playerIn.sendStatusMessage(new TextComponentTranslation("item.smbmagicmirror:magicmirror.error.nolocation"),true);
+            }
+            else if (getHandler(playerIn).getXpTeleportCost(playerIn) > playerIn.experienceTotal)
+            {
+                String translation = I18n.translateToLocal("item.smbmagicmirror:magicmirror.error.xp");
+                translation = translation.replace("%1", "" + (getHandler(playerIn).getXpTeleportCost(playerIn) - playerIn.experienceTotal));
+                translation = translation.replace("%2", "" + getHandler(playerIn).getXpTeleportCost(playerIn));
+                playerIn.sendStatusMessage(new TextComponentString(translation),true);
+            }
+        }
+        return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
+    }
+
+    @Override
+    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityLivingBase entityLiving, int timeLeft) {
+        super.onPlayerStoppedUsing(stack, worldIn, entityLiving, timeLeft);
     }
 
     @Override
@@ -208,18 +140,16 @@ public class ItemMirror extends Item
         }
     }
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b)
+    /**
+     * Can the user teleport
+     *
+     * @param player
+     * @return
+     */
+    public boolean canTeleport(EntityPlayer player)
     {
-        if (player.worldObj.provider.hasNoSky)
-        {
-            sep("\u00a7c", StatCollector.translateToLocal(getUnlocalizedName() + ".error.noSky"), list);
-        }
-        else
-        {
-            sep(StatCollector.translateToLocal(getUnlocalizedName() + ".desc"), list);
-        }
+        float xp = getHandler(player).getXpTeleportCost(player);
+        return (int) xp > 0 && (!MagicMirror.USE_XP || player.capabilities.isCreativeMode || player.experienceTotal >= xp);
     }
 
     public static void sep(String translation, List list)
@@ -240,28 +170,35 @@ public class ItemMirror extends Item
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public boolean hasEffect(ItemStack p_77636_1_)
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
-        //TODO if has teleport location and XP add glow effect
-        return p_77636_1_.isItemEnchanted();
+            if (worldIn.provider.hasSkyLight())
+            {
+                sep("\u00a7c", I18n.translateToLocal(getUnlocalizedName() + ".error.nosky"), tooltip);
+            }
+            else
+            {
+                sep(I18n.translateToLocal(getUnlocalizedName() + ".desc"), tooltip);
+            }
     }
 
     @Override
-    public EnumRarity getRarity(ItemStack p_77613_1_)
-    {
-        return EnumRarity.rare;
+    public boolean hasEffect(ItemStack stack) {
+        return stack.isItemEnchanted();
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void getSubItems(Item item, CreativeTabs tab, List list)
-    {
-        list.add(new ItemStack(item, 1, 0));
-        list.add(new ItemStack(item, 1, 1));
-        list.add(new ItemStack(item, 1, 2));
-        list.add(new ItemStack(item, 1, 3));
-        list.add(new ItemStack(item, 1, 4));
-        list.add(new ItemStack(item, 1, 5));
+    public EnumRarity getRarity(ItemStack stack) {
+        return EnumRarity.RARE;
+    }
+
+    @Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        items.add(new ItemStack(this, 1, 0));
+        items.add(new ItemStack(this, 1, 1));
+        items.add(new ItemStack(this, 1, 2));
+        items.add(new ItemStack(this, 1, 3));
+        items.add(new ItemStack(this, 1, 4));
+        items.add(new ItemStack(this, 1, 5));
     }
 }

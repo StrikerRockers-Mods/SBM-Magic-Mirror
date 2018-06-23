@@ -1,8 +1,8 @@
-item.smbmagicmirror:magicMirror.name=Magic Mirror
-item.smbmagicmirror:magicMirror.desc=Records your last position,above ground and allows you,to teleport to it for XP
+item.smbmagicmirror:magicmirror.name=Magic Mirror
+item.smbmagicmirror:magicmirror.desc=Records your last position,above ground and allows you,to teleport to it for XP
 item.smbmagicmirror:magicMirror.location=Your location is %1x %2y %3z and will cost %4 xp to teleport
-item.smbmagicmirror:magicMirror.location.set=Mirror location set to %1x %2y %3z
-item.smbmagicmirror:magicMirror.error.noLocation=No location stored.
-item.smbmagicmirror:magicMirror.error.xp=You are missing %1 xp out of %2 needed.
-item.smbmagicmirror:magicMirror.error.noSky=Mirror only works in dimension with sky boxes
-item.smbmagicmirror:magicMirror.error.link.broken.distance=Mirror link broken, you have walked too far away
+item.smbmagicmirror:magicmirror.location.set=Mirror location set to %1x %2y %3z
+item.smbmagicmirror:magicmirror.error.nolocation=No location stored.
+item.smbmagicmirror:magicmirror.error.xp=You are missing %1 xp out of %2 needed.
+item.smbmagicmirror:magicmirror.error.nosky=Mirror only works in dimension with sky boxes
+item.smbmagicmirror:magicmirror.error.link.broken.distance=Mirror link broken, you have walked too far away

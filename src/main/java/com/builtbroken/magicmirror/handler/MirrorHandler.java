@@ -1,11 +1,13 @@
 package com.builtbroken.magicmirror.handler;
 
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import com.builtbroken.magicmirror.MagicMirror;
+import com.builtbroken.magicmirror.handler.capability.MirrorProvider;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -16,6 +18,7 @@ import java.util.UUID;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 9/8/2016.
  */
+@Mod.EventBusSubscriber
 public class MirrorHandler
 {
     /** Username to teleport location, saves when game closes */
@@ -45,115 +48,19 @@ public class MirrorHandler
 
 
     /**
-     * Sets the player's teleport location
-     *
-     * @param player
-     * @param potentialTP
-     */
-    public static void setTeleportLocation(EntityPlayer player, TeleportPos potentialTP)
-    {
-        if (potentialTP == null)
-        {
-            userIDToMirrorLocation.remove(player.getGameProfile().getId());
-        }
-        else
-        {
-            String translation =  StatCollector.translateToLocal("item.smbmagicmirror:magicMirror.location.set").replace("%1", "" + potentialTP.x).replace("%2", "" + potentialTP.y).replace("%3", "" + potentialTP.z);
-            if(translation != null)
-            {
-                player.addChatComponentMessage(new ChatComponentText(translation));
-            }
-            userIDToMirrorLocation.put(player.getGameProfile().getId(), potentialTP);
-        }
-    }
-
-
-    /**
      * Called to teleport the player to his set mirror location
      *
      * @param player - player, not null
      */
-    public static void teleport(EntityPlayer player)
-    {
-        if (userIDToMirrorLocation.containsKey(player.getGameProfile().getId()))
-        {
-            userIDToMirrorLocation.get(player.getGameProfile().getId()).teleport(player);
-        }
+    public static void teleport(EntityPlayer player){
+        EntityData.getHandler(player).getLocation().teleport(player);
     }
 
     @SubscribeEvent
-    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event)
+    public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event)
     {
-        clearData(event.player);
-    }
-
-    @SubscribeEvent
-    public void onPlayerDeath(LivingDeathEvent event)
-    {
-        if (event.entity instanceof EntityPlayer)
-        {
-            clearData((EntityPlayer) event.entity);
+        if (event.getObject() instanceof EntityPlayer){
+            event.addCapability(new ResourceLocation(MagicMirror.DOMAIN,"teleportPOS"), new MirrorProvider());
         }
-    }
-
-    @SubscribeEvent
-    public void onPlayerChangeDim(PlayerEvent.PlayerChangedDimensionEvent event)
-    {
-        //TODO don't clear for hell dim, rather set location to in front of hell door
-        clearData(event.player);
-    }
-
-    /**
-     * Removes the player's location for teleportation
-     *
-     * @param player - NPE checked, NPE checked for {@link com.mojang.authlib.GameProfile}
-     */
-    public static void clearData(EntityPlayer player)
-    {
-        if (player != null && player.getGameProfile() != null)
-        {
-            UUID id = player.getGameProfile().getId();
-            if (userIDToMirrorLocation.containsKey(id))
-            {
-                userIDToMirrorLocation.remove(id);
-                userData.remove(id);
-            }
-        }
-    }
-
-    /**
-     * Checks if the player has a location stored for use
-     *
-     * @param e
-     * @return
-     */
-    public static boolean hasLocation(EntityPlayer e)
-    {
-        return userIDToMirrorLocation.containsKey(e.getGameProfile().getId());
-    }
-
-    /**
-     * Gets the location to teleport the user to
-     *
-     * @param e
-     * @return
-     */
-    public static TeleportPos getLocation(EntityPlayer e)
-    {
-        return userIDToMirrorLocation.get(e.getGameProfile().getId());
-    }
-
-    /**
-     * Gets the cost of teleporting for the user
-     * @param player
-     * @return
-     */
-    public static float getXpTeleportCost(EntityPlayer player)
-    {
-        if(hasLocation(player))
-        {
-            return getLocation(player).getTeleportCost(player);
-        }
-        return 0;
     }
 }
