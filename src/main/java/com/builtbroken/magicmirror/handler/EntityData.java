@@ -1,7 +1,7 @@
 package com.builtbroken.magicmirror.handler;
 
 import com.builtbroken.magicmirror.MagicMirror;
-import com.builtbroken.magicmirror.handler.capability.IMirrorData;
+import com.builtbroken.magicmirror.capability.IMirrorData;
 import com.builtbroken.magicmirror.network.PacketClientUpdate;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -15,7 +15,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import static com.builtbroken.magicmirror.handler.capability.MirrorStorage.CAPABILITY_MIRROR;
+import static com.builtbroken.magicmirror.capability.MirrorStorage.CAPABILITY_MIRROR;
 
 /**
  * Stores data about the entity in order to track movement, time on surface, etc....
@@ -26,15 +26,25 @@ import static com.builtbroken.magicmirror.handler.capability.MirrorStorage.CAPAB
 public class EntityData
 {
     //TODO make per use configurable threw commands [within reason]
-    /** Amount of time to delay before resetting sky lose count */
+    /**
+     * Amount of time to delay before resetting sky lose count
+     */
     public static final int SKY_COOLDOWN = 5 * 20; //5 seconds
-    /** Amount of time to delay before resetting onSurface count */
+    /**
+     * Amount of time to delay before resetting onSurface count
+     */
     public static final int SURFACE_COOLDOWN = 5 * 20; //5 seconds
-    /** Amount of time to delay before setting teleport location */
+    /**
+     * Amount of time to delay before setting teleport location
+     */
     public static final int TP_SET_DELAY = 5 * 20; //5 seconds
-    /** Minimal amount of time the user has to be on the surface for the mirror to record a location */
+    /**
+     * Minimal amount of time the user has to be on the surface for the mirror to record a location
+     */
     public static final int MIN_SURFACE_TIME = 60 * 20; //1 min
-    /** Distance in X & Z that player can travel and still teleport */
+    /**
+     * Distance in X & Z that player can travel and still teleport
+     */
     public static int MAX_TELEPORT_DISTANCE = 200;
 
 
@@ -43,24 +53,31 @@ public class EntityData
     public int x;
     public int y;
     public int z;
-    public BlockPos blockPos = new BlockPos(x,y,z);
+    public BlockPos blockPos = new BlockPos(x, y, z);
 
-    /** Amount of time user has been on surface */
+    /**
+     * Amount of time user has been on surface
+     */
     public int timeAboveGround;
-    /** Amount of time user has not been in sight of the sky */
+    /**
+     * Amount of time user has not been in sight of the sky
+     */
     public int timeWithoutSky;
-
+    /**
+     * Was user on surface last tick
+     */
+    public boolean wasOnSurface;
+    /**
+     * Could user see sky last tick
+     */
+    public boolean couldSeeSky;
     private int timeOnSurfaceCooldown;
     private int timeWithoutSkyCooldown;
-
-    /** Was user on surface last tick */
-    public boolean wasOnSurface;
-    /** Could user see sky last tick */
-    public boolean couldSeeSky;
-
     private TeleportPos potentialTP;
 
-    /** Used to prevent the data from updating too often */
+    /**
+     * Used to prevent the data from updating too often
+     */
     private Long lastTickTime = 0L;
 
     private int tick = 0;
@@ -78,7 +95,8 @@ public class EntityData
         this.z = z;
     }
 
-    public static IMirrorData getHandler(EntityPlayer entity) {
+    public static IMirrorData getHandler(EntityPlayer entity)
+    {
 
         if (entity.hasCapability(CAPABILITY_MIRROR, EnumFacing.DOWN))
             return entity.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN);
@@ -136,8 +154,8 @@ public class EntityData
                     if (distance >= MAX_TELEPORT_DISTANCE)
                     {
                         //TODO add config to disable this action
-                        player.getCapability(CAPABILITY_MIRROR,EnumFacing.DOWN).setLocation(null);
-                        player.sendStatusMessage(new TextComponentTranslation("item.smbmagicmirror:magicmirror.error.link.broken.distance"),true);
+                        player.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN).setLocation(null);
+                        player.sendStatusMessage(new TextComponentTranslation("item.sbmmagicmirror:magicmirror.error.link.broken.distance"), true);
                     }
                 }
 
@@ -154,13 +172,13 @@ public class EntityData
                 if (stillOnSurface)
                 {
                     timeAboveGround++;
-                    if(getHandler(player).hasLocation() && timeAboveGround >= SURFACE_COOLDOWN)
+                    if (getHandler(player).hasLocation() && timeAboveGround >= SURFACE_COOLDOWN)
                     {
-                        getHandler(player).setLocation(player,null);
+                        getHandler(player).setLocation(player, null);
                     }
                     if (timeAboveGround == MIN_SURFACE_TIME)
                     {
-                        player.sendStatusMessage(new TextComponentString("Mirror charged by the love of the sky"),true);
+                        player.sendStatusMessage(new TextComponentString("Mirror charged by the love of the sky"), true);
                         //TODO Randomize message
                         //TODO add command to enable/disable message
                     }
@@ -173,7 +191,7 @@ public class EntityData
                         potentialTP = new TeleportPos(player);
                         if (getHandler(player).hasLocation())
                         {
-                            getHandler(player).setLocation(player,null);
+                            getHandler(player).setLocation(player, null);
                         }
                     }
                 }
@@ -184,7 +202,7 @@ public class EntityData
                     timeWithoutSky++;
                     if (potentialTP != null && timeWithoutSky >= TP_SET_DELAY)
                     {
-                        getHandler(player).setLocation(player,potentialTP);
+                        getHandler(player).setLocation(player, potentialTP);
                         reset();
                     }
                     if (timeOnSurfaceCooldown++ >= SURFACE_COOLDOWN)
@@ -192,8 +210,7 @@ public class EntityData
                         timeAboveGround = 0;
                         timeOnSurfaceCooldown = 0;
                     }
-                }
-                else if (timeWithoutSkyCooldown++ >= SKY_COOLDOWN)
+                } else if (timeWithoutSkyCooldown++ >= SKY_COOLDOWN)
                 {
                     timeWithoutSky = 0;
                     timeWithoutSkyCooldown = 0;
@@ -225,17 +242,15 @@ public class EntityData
                 //Send packet update to usernew BlockPos(x,y,z)
                 if (player instanceof EntityPlayerMP && (tick == 1 || tick % 5 == 0))
                 {
-                    MagicMirror.network.sendTo(new PacketClientUpdate((int) getHandler(player).getXpTeleportCost(player), timeAboveGround >= MIN_SURFACE_TIME, getHandler(player).hasLocation()),(EntityPlayerMP)player);
+                    MagicMirror.network.sendTo(new PacketClientUpdate((int) getHandler(player).getXpTeleportCost(player), timeAboveGround >= MIN_SURFACE_TIME, getHandler(player).hasLocation()), (EntityPlayerMP) player);
 
                 }
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 if (MagicMirror.runningAsDev)
                 {
                     MagicMirror.logger.error("EntityData failed to update information about entity", e);
-                }
-                else
+                } else
                 {
                     MagicMirror.logger.error("EntityData failed to update information about entity, errored with message: [ " + e.getMessage() + " ] enable dev mod for more detailed info.");
                 }

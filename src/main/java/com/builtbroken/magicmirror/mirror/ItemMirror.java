@@ -1,8 +1,8 @@
 package com.builtbroken.magicmirror.mirror;
 
 import com.builtbroken.magicmirror.MagicMirror;
+import com.builtbroken.magicmirror.capability.IMirrorData;
 import com.builtbroken.magicmirror.handler.MirrorHandler;
-import com.builtbroken.magicmirror.handler.capability.IMirrorData;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -20,8 +20,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static com.builtbroken.magicmirror.MagicMirror.proxy;
-import static com.builtbroken.magicmirror.handler.capability.MirrorStorage.CAPABILITY_MIRROR;
+import static com.builtbroken.magicmirror.capability.MirrorStorage.CAPABILITY_MIRROR;
 
 /**
  * Item class for the basic magic mirror
@@ -32,9 +31,13 @@ import static com.builtbroken.magicmirror.handler.capability.MirrorStorage.CAPAB
 public class ItemMirror extends Item
 {
     public static int TICKS_BEFORE_TELEPORT = 5 * 20; //5 seconds
-    /** CLIENT DATA, how much XP it costs to teleport */
+    /**
+     * CLIENT DATA, how much XP it costs to teleport
+     */
     public static int currentXPCostToTeleport = 0;
-    /** CLIENT DATA,  0 = nothing, 1 = can be activated, 2 = is charged / will record data, 3 = is charged & can be activated*/
+    /**
+     * CLIENT DATA,  0 = nothing, 1 = can be activated, 2 = is charged / will record data, 3 = is charged & can be activated
+     */
     public static byte currentMirrorState = 0;
 
     public ItemMirror()
@@ -44,38 +47,31 @@ public class ItemMirror extends Item
         setCreativeTab(CreativeTabs.TOOLS);
         setUnlocalizedName(MagicMirror.DOMAIN + ":magicmirror");
         setRegistryName(MagicMirror.DOMAIN + ":magicmirror");
-        proxy.registerItemRenderer(this,0,"silver");
-        proxy.registerItemRenderer(this,1,"gold");
-        proxy.registerItemRenderer(this,2,"diamond");
-        proxy.registerItemRenderer(this,3,"silver_dirty");
-        proxy.registerItemRenderer(this,4,"gold_dirty");
-        proxy.registerItemRenderer(this,5,"diamond_dirty");
     }
 
-    public static IMirrorData getHandler(EntityPlayer entity) {
+    public static IMirrorData getHandler(EntityPlayer entity)
+    {
 
         if (entity.hasCapability(CAPABILITY_MIRROR, EnumFacing.DOWN))
             return entity.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN);
         return null;
     }
 
-    @Override
-    public String getUnlocalizedName(ItemStack stack) {
-        int i = stack.getMetadata();
-        switch (i)
+    public static void sep(String translation, List list)
+    {
+        sep(null, translation, list);
+    }
+
+    public static void sep(String color, String translation, List list)
+    {
+        if (translation != null && !translation.isEmpty())
         {
-            case 1:
-                return "gold_icon";
-            case 2:
-                return "diamond_icon";
-            case 3:
-                return "silver_dirty_icon";
-            case 4:
-                return "gold_dirty_icon";
-            case 5:
-                return "diamond_dirty_icon";
+            String[] strings = translation.split(",");
+            for (String s : strings)
+            {
+                list.add((color != null ? color : "") + s.trim());
+            }
         }
-        return "silver_clean";
     }
 
     @Override
@@ -85,11 +81,12 @@ public class ItemMirror extends Item
     }
 
     @Override
-    public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
+    public void onUsingTick(ItemStack stack, EntityLivingBase player, int count)
+    {
         //TODO play charging sound effect
         if (count <= 1)
         {
-            MirrorHandler.teleport((EntityPlayer)player);
+            MirrorHandler.teleport((EntityPlayer) player);
             player.stopActiveHand();
         }
     }
@@ -104,26 +101,25 @@ public class ItemMirror extends Item
                 //TODO play charge start sound effect
                 if (playerIn.getHeldItem(handIn) == ItemStack.EMPTY)
                 {
-                        playerIn.setActiveHand(handIn);
+                    playerIn.setActiveHand(handIn);
                 }
-            }
-            else if (!getHandler(playerIn).hasLocation())
+            } else if (!getHandler(playerIn).hasLocation())
             {
-                playerIn.sendStatusMessage(new TextComponentTranslation("item.smbmagicmirror:magicmirror.error.nolocation"),true);
-            }
-            else if (getHandler(playerIn).getXpTeleportCost(playerIn) > playerIn.experienceTotal)
+                playerIn.sendStatusMessage(new TextComponentTranslation("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
+            } else if (getHandler(playerIn).getXpTeleportCost(playerIn) > playerIn.experienceTotal)
             {
-                String translation = I18n.translateToLocal("item.smbmagicmirror:magicmirror.error.xp");
+                String translation = I18n.translateToLocal("item.sbmmagicmirror:magicmirror.error.xp");
                 translation = translation.replace("%1", "" + (getHandler(playerIn).getXpTeleportCost(playerIn) - playerIn.experienceTotal));
                 translation = translation.replace("%2", "" + getHandler(playerIn).getXpTeleportCost(playerIn));
-                playerIn.sendStatusMessage(new TextComponentString(translation),true);
+                playerIn.sendStatusMessage(new TextComponentString(translation), true);
             }
         }
         return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityLivingBase entityLiving, int timeLeft) {
+    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityLivingBase entityLiving, int timeLeft)
+    {
         super.onPlayerStoppedUsing(stack, worldIn, entityLiving, timeLeft);
     }
 
@@ -152,48 +148,36 @@ public class ItemMirror extends Item
         return (int) xp > 0 && (!MagicMirror.USE_XP || player.capabilities.isCreativeMode || player.experienceTotal >= xp);
     }
 
-    public static void sep(String translation, List list)
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
-        sep(null, translation, list);
-    }
-
-    public static void sep(String color, String translation, List list)
-    {
-        if (translation != null && !translation.isEmpty())
+        if (worldIn != null)
         {
-            String[] strings = translation.split(",");
-            for (String s : strings)
+            if (!worldIn.provider.hasSkyLight())
             {
-                list.add((color != null ? color : "") + s.trim());
+                sep("\u00a7c", I18n.translateToLocal(getUnlocalizedName() + ".error.nosky"), tooltip);
+            } else
+            {
+                sep(I18n.translateToLocal(getUnlocalizedName() + ".desc"), tooltip);
             }
         }
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
+    public boolean hasEffect(ItemStack stack)
     {
-            if (worldIn.provider.hasSkyLight())
-            {
-                sep("\u00a7c", I18n.translateToLocal(getUnlocalizedName() + ".error.nosky"), tooltip);
-            }
-            else
-            {
-                sep(I18n.translateToLocal(getUnlocalizedName() + ".desc"), tooltip);
-            }
-    }
-
-    @Override
-    public boolean hasEffect(ItemStack stack) {
         return stack.isItemEnchanted();
     }
 
     @Override
-    public EnumRarity getRarity(ItemStack stack) {
+    public EnumRarity getRarity(ItemStack stack)
+    {
         return EnumRarity.RARE;
     }
 
     @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+    {
         items.add(new ItemStack(this, 1, 0));
         items.add(new ItemStack(this, 1, 1));
         items.add(new ItemStack(this, 1, 2));

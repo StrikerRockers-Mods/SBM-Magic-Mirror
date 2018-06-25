@@ -1,7 +1,7 @@
 package com.builtbroken.magicmirror.handler;
 
 import com.builtbroken.magicmirror.MagicMirror;
-import com.builtbroken.magicmirror.handler.capability.MirrorProvider;
+import com.builtbroken.magicmirror.capability.MirrorProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -21,7 +21,9 @@ import java.util.UUID;
 @Mod.EventBusSubscriber
 public class MirrorHandler
 {
-    /** Username to teleport location, saves when game closes */
+    /**
+     * Username to teleport location, saves when game closes
+     */
     public static final HashMap<UUID, TeleportPos> userIDToMirrorLocation = new HashMap();
     public static final HashMap<UUID, EntityData> userData = new HashMap();
 
@@ -52,15 +54,17 @@ public class MirrorHandler
      *
      * @param player - player, not null
      */
-    public static void teleport(EntityPlayer player){
+    public static void teleport(EntityPlayer player)
+    {
         EntityData.getHandler(player).getLocation().teleport(player);
     }
 
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event)
     {
-        if (event.getObject() instanceof EntityPlayer){
-            event.addCapability(new ResourceLocation(MagicMirror.DOMAIN,"teleportPOS"), new MirrorProvider());
+        if (event.getObject() instanceof EntityPlayer)
+        {
+            event.addCapability(new ResourceLocation(MagicMirror.DOMAIN, "teleportPOS"), new MirrorProvider());
         }
     }
 }

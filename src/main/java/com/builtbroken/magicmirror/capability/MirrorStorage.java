@@ -1,4 +1,4 @@
-package com.builtbroken.magicmirror.handler.capability;
+package com.builtbroken.magicmirror.capability;
 
 import com.builtbroken.magicmirror.handler.TeleportPos;
 import net.minecraft.nbt.NBTBase;
@@ -22,14 +22,16 @@ public class MirrorStorage implements Capability.IStorage<IMirrorData>
     @Override
     public NBTBase writeNBT(Capability<IMirrorData> capability, IMirrorData instance, EnumFacing side)
     {
-
         TeleportPos teleportPos = instance.getLocation();
-        final NBTTagCompound tagCompound= new NBTTagCompound();
-        tagCompound.setInteger("x",teleportPos.x);
-        tagCompound.setInteger("y",teleportPos.y);
-        tagCompound.setInteger("z",teleportPos.z);
-        tagCompound.setFloat("yaw",teleportPos.yaw);
-        tagCompound.setFloat("pitch",teleportPos.pitch);
+        final NBTTagCompound tagCompound = new NBTTagCompound();
+        if (teleportPos != null)
+        {
+            tagCompound.setInteger("x", teleportPos.x);
+            tagCompound.setInteger("y", teleportPos.y);
+            tagCompound.setInteger("z", teleportPos.z);
+            tagCompound.setFloat("yaw", teleportPos.yaw);
+            tagCompound.setFloat("pitch", teleportPos.pitch);
+        }
         return tagCompound;
     }
 
@@ -37,7 +39,7 @@ public class MirrorStorage implements Capability.IStorage<IMirrorData>
     public void readNBT(Capability<IMirrorData> capability, IMirrorData instance, EnumFacing side, NBTBase nbt)
     {
         final NBTTagCompound tag = (NBTTagCompound) nbt;
-        instance.setLocation(new TeleportPos(tag.getInteger("x"),tag.getInteger("y"),tag.getInteger("z"),tag.getFloat("yaw"),tag.getFloat("pitch")));
+        instance.setLocation(new TeleportPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"), tag.getFloat("yaw"), tag.getFloat("pitch")));
     }
 
 }

@@ -52,19 +52,20 @@ public class TeleportPos
         //TODO use different sounds for leave and enter
         if (player instanceof EntityPlayerMP)
         {
-            player.sendStatusMessage(new TextComponentString("*Poof*"),true);
-            player.setPositionAndRotation(x+0.5,y+0.5,z+0.5,yaw,pitch);
+            player.sendStatusMessage(new TextComponentString("*Poof*"), true);
+            player.setPositionAndRotation(x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
         }
     }
 
     /**
      * Cost in XP to teleport to the location
+     *
      * @param player
      * @return
      */
     public float getTeleportCost(EntityPlayer player)
     {
-        if(MagicMirror.FLAT_RATE)
+        if (MagicMirror.FLAT_RATE)
         {
             return MagicMirror.XP_COST;
         }
@@ -73,16 +74,18 @@ public class TeleportPos
 
     /**
      * Distance to the location from the entity
+     *
      * @param entity
      * @return
      */
     public int getDistanceInt(Entity entity)
     {
-        return (int)Math.sqrt(Math.pow(entity.posX - x, 2) + Math.pow(entity.posY - y, 2) + Math.pow(entity.posZ - z, 2));
+        return (int) Math.sqrt(Math.pow(entity.posX - x, 2) + Math.pow(entity.posY - y, 2) + Math.pow(entity.posZ - z, 2));
     }
 
     /**
      * Distance to the location from the entity
+     *
      * @param entity
      * @return
      */

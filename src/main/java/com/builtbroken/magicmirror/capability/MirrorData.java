@@ -1,4 +1,4 @@
-package com.builtbroken.magicmirror.handler.capability;
+package com.builtbroken.magicmirror.capability;
 
 import com.builtbroken.magicmirror.handler.TeleportPos;
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,14 +8,10 @@ import net.minecraft.util.text.translation.I18n;
 /**
  * Created by StrikerRocker on 22/6/18.
  */
-public class MirrorData implements IMirrorData{
+public class MirrorData implements IMirrorData
+{
 
     private TeleportPos teleportPos;
-    private int x;
-    private int y;
-    private int z;
-    private float yaw;
-    private float pitch;
 
     @Override
     public boolean hasLocation()
@@ -32,20 +28,17 @@ public class MirrorData implements IMirrorData{
     @Override
     public void setLocation(TeleportPos potentialTP)
     {
-        if (potentialTP !=null){
+        if (potentialTP != null)
+        {
             teleportPos = potentialTP;
-            x = teleportPos.x;
-            y = teleportPos.y;
-            z = teleportPos.z;
-            yaw = teleportPos.yaw;
-            pitch = teleportPos.pitch;
         }
     }
 
     @Override
     public float getXpTeleportCost(EntityPlayer player)
     {
-        if (hasLocation()){
+        if (hasLocation())
+        {
             return getLocation().getTeleportCost(player);
         }
         return 0;
@@ -55,10 +48,10 @@ public class MirrorData implements IMirrorData{
     public void setLocation(EntityPlayer player, TeleportPos potentialTP)
     {
         setLocation(potentialTP);
-            String translation =  I18n.translateToLocal("item.smbmagicmirror:magicmirror.location.set").replace("%1", "" + potentialTP.x).replace("%2", "" + potentialTP.y).replace("%3", "" + potentialTP.z);
-            if(translation != null)
-            {
-                player.sendStatusMessage(new TextComponentString(translation),true);
-            }
+        String translation = I18n.translateToLocal("item.sbmmagicmirror:magicmirror.location.set").replace("%1", "" + potentialTP.x).replace("%2", "" + potentialTP.y).replace("%3", "" + potentialTP.z);
+        if (translation != null)
+        {
+            player.sendStatusMessage(new TextComponentString(translation), true);
+        }
     }
 }

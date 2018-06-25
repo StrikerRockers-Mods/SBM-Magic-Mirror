@@ -1,4 +1,4 @@
-package com.builtbroken.magicmirror.handler.capability;
+package com.builtbroken.magicmirror.capability;
 
 import com.builtbroken.magicmirror.handler.TeleportPos;
 import net.minecraft.entity.player.EntityPlayer;
@@ -6,7 +6,8 @@ import net.minecraft.entity.player.EntityPlayer;
 /**
  * Created by StrikerRocker on 22/6/18.
  */
-public interface IMirrorData {
+public interface IMirrorData
+{
 
     /**
      * Checks if the player has a location stored for use
@@ -14,6 +15,7 @@ public interface IMirrorData {
      * @return
      */
     boolean hasLocation();
+
     /**
      * Gets the location to teleport the user to
      *
@@ -30,6 +32,7 @@ public interface IMirrorData {
 
     /**
      * Gets the cost of teleporting for the user
+     *
      * @param player
      * @return
      */

@@ -27,13 +27,15 @@ public class PacketClientUpdate implements IMessage
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    public void fromBytes(ByteBuf buf)
+    {
         xpCost = buf.readInt();
         state = buf.readByte();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(ByteBuf buf)
+    {
         buf.writeInt(xpCost);
         buf.writeByte(state);
     }
@@ -41,11 +43,12 @@ public class PacketClientUpdate implements IMessage
     public static class Handler implements IMessageHandler<PacketClientUpdate, IMessage>
     {
         @Override
-        public IMessage onMessage(PacketClientUpdate message, MessageContext ctx) {
+        public IMessage onMessage(PacketClientUpdate message, MessageContext ctx)
+        {
             Minecraft.getMinecraft().addScheduledTask(() ->
             {
-                ItemMirror.currentXPCostToTeleport= message.xpCost;
-                ItemMirror.currentMirrorState=message.state;
+                ItemMirror.currentXPCostToTeleport = message.xpCost;
+                ItemMirror.currentMirrorState = message.state;
             });
             return null;
         }

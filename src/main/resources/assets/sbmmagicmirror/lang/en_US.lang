@@ -1,0 +1,8 @@
+item.sbmmagicmirror:magicmirror.name=Magic Mirror
+item.sbmmagicmirror:magicmirror.desc=Records your last position,above ground and allows you,to teleport to it for XP
+item.sbmmagicmirror:magicMirror.location=Your location is %1x %2y %3z and will cost %4 xp to teleport
+item.sbmmagicmirror:magicmirror.location.set=Mirror location set to %1x %2y %3z
+item.sbmmagicmirror:magicmirror.error.nolocation=No location stored.
+item.sbmmagicmirror:magicmirror.error.xp=You are missing %1 xp out of %2 needed.
+item.sbmmagicmirror:magicmirror.error.nosky=Mirror only works in dimension with sky boxes
+item.sbmmagicmirror:magicmirror.error.link.broken.distance=Mirror link broken, you have walked too far away
