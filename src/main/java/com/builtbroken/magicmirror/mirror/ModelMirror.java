@@ -36,7 +36,6 @@ public class ModelMirror implements ItemMeshDefinition
             type.put(3, "silver_dirty");
             type.put(4, "gold_dirty");
             type.put(5, "diamond_dirty");
-            String[] metaType = {"silver", "gold", "diamond", "silver_dirty", "gold_dirty", "diamond_dirty"};
             if (state == 2 || state == 3)
             {
                 return new ModelResourceLocation(new ResourceLocation(DOMAIN, type.get(meta) + "_shine"), "inventory");

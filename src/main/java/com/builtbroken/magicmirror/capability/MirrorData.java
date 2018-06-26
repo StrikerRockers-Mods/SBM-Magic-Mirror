@@ -28,10 +28,7 @@ public class MirrorData implements IMirrorData
     @Override
     public void setLocation(TeleportPos potentialTP)
     {
-        if (potentialTP != null)
-        {
-            teleportPos = potentialTP;
-        }
+        teleportPos = potentialTP;
     }
 
     @Override

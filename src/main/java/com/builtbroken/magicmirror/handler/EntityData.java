@@ -53,7 +53,6 @@ public class EntityData
     public int x;
     public int y;
     public int z;
-    public BlockPos blockPos = new BlockPos(x, y, z);
 
     /**
      * Amount of time user has been on surface
@@ -261,7 +260,7 @@ public class EntityData
 
     public boolean checkCanSeeSky()
     {
-        return !world.provider.hasSkyLight() && (world.canBlockSeeSky(blockPos) || doRayCheckSky());
+        return !world.provider.hasSkyLight() && (world.canBlockSeeSky(new BlockPos(x,y,z) ) || doRayCheckSky());
     }
 
     //Does a basic check to see if there is a solid block above us
@@ -270,7 +269,7 @@ public class EntityData
         for (int y = this.y; y <= world.getActualHeight(); y++)
         {
             //TODO check if block is full
-            IBlockState state = world.getBlockState(blockPos);
+            IBlockState state = world.getBlockState(new BlockPos(x,y,z));
             Block block = state.getBlock();
             if (block.getMaterial(state) != Material.AIR && block.isOpaqueCube(state))
             {

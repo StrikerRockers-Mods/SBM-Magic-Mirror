@@ -16,6 +16,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -87,7 +89,6 @@ public class ItemMirror extends Item
         if (count <= 1)
         {
             MirrorHandler.teleport((EntityPlayer) player);
-            player.stopActiveHand();
         }
     }
 
@@ -102,6 +103,7 @@ public class ItemMirror extends Item
                 if (playerIn.getHeldItem(handIn) == ItemStack.EMPTY)
                 {
                     playerIn.setActiveHand(handIn);
+                    return new ActionResult<>(EnumActionResult.SUCCESS,playerIn.getHeldItem(handIn));
                 }
             } else if (!getHandler(playerIn).hasLocation())
             {
@@ -149,16 +151,17 @@ public class ItemMirror extends Item
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
         if (worldIn != null)
         {
             if (!worldIn.provider.hasSkyLight())
             {
-                sep("\u00a7c", I18n.translateToLocal(getUnlocalizedName() + ".error.nosky"), tooltip);
+                sep("\u00a7c", net.minecraft.client.resources.I18n.format(getUnlocalizedName() + ".error.nosky"), tooltip);
             } else
             {
-                sep(I18n.translateToLocal(getUnlocalizedName() + ".desc"), tooltip);
+                sep(net.minecraft.client.resources.I18n.format(getUnlocalizedName() + ".desc"), tooltip);
             }
         }
     }
@@ -185,4 +188,6 @@ public class ItemMirror extends Item
         items.add(new ItemStack(this, 1, 4));
         items.add(new ItemStack(this, 1, 5));
     }
+
+
 }

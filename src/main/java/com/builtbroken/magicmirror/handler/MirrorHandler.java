@@ -56,7 +56,9 @@ public class MirrorHandler
      */
     public static void teleport(EntityPlayer player)
     {
-        EntityData.getHandler(player).getLocation().teleport(player);
+        if (EntityData.getHandler(player).hasLocation()) {
+            EntityData.getHandler(player).getLocation().teleport(player);
+        }
     }
 
     @SubscribeEvent
