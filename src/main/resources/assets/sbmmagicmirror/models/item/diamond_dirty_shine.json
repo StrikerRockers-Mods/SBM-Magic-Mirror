@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "smbmagicmirror:items/diamond_dirty",
-    "layer1": "smbmagicmirror:items/shine"
+    "layer0": "sbmmagicmirror:items/diamond_dirty",
+    "layer1": "sbmmagicmirror:items/shine"
   }
 }

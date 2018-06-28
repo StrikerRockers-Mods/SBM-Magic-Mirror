@@ -86,7 +86,7 @@ public class ItemMirror extends Item
     public void onUsingTick(ItemStack stack, EntityLivingBase player, int count)
     {
         //TODO play charging sound effect
-        if (count <= 1)
+        if (getMaxItemUseDuration(stack)-count >= 1 && player instanceof EntityPlayer)
         {
             MirrorHandler.teleport((EntityPlayer) player);
         }
@@ -100,29 +100,22 @@ public class ItemMirror extends Item
             if (canTeleport(playerIn))
             {
                 //TODO play charge start sound effect
-                if (playerIn.getHeldItem(handIn) == ItemStack.EMPTY)
-                {
-                    playerIn.setActiveHand(handIn);
-                    return new ActionResult<>(EnumActionResult.SUCCESS,playerIn.getHeldItem(handIn));
-                }
+                playerIn.setActiveHand(handIn);
+                return new ActionResult<>(EnumActionResult.SUCCESS,playerIn.getHeldItem(handIn));
             } else if (!getHandler(playerIn).hasLocation())
             {
                 playerIn.sendStatusMessage(new TextComponentTranslation("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
+                return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
             } else if (getHandler(playerIn).getXpTeleportCost(playerIn) > playerIn.experienceTotal)
             {
                 String translation = I18n.translateToLocal("item.sbmmagicmirror:magicmirror.error.xp");
                 translation = translation.replace("%1", "" + (getHandler(playerIn).getXpTeleportCost(playerIn) - playerIn.experienceTotal));
                 translation = translation.replace("%2", "" + getHandler(playerIn).getXpTeleportCost(playerIn));
                 playerIn.sendStatusMessage(new TextComponentString(translation), true);
+                return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
             }
         }
-        return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
-    }
-
-    @Override
-    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityLivingBase entityLiving, int timeLeft)
-    {
-        super.onPlayerStoppedUsing(stack, worldIn, entityLiving, timeLeft);
+        return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
     }
 
     @Override
@@ -181,13 +174,14 @@ public class ItemMirror extends Item
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        items.add(new ItemStack(this, 1, 0));
-        items.add(new ItemStack(this, 1, 1));
-        items.add(new ItemStack(this, 1, 2));
-        items.add(new ItemStack(this, 1, 3));
-        items.add(new ItemStack(this, 1, 4));
-        items.add(new ItemStack(this, 1, 5));
+        if (tab != CreativeTabs.INVENTORY) {
+            items.add(new ItemStack(this, 1, 0));
+            items.add(new ItemStack(this, 1, 1));
+            items.add(new ItemStack(this, 1, 2));
+            items.add(new ItemStack(this, 1, 3));
+            items.add(new ItemStack(this, 1, 4));
+            items.add(new ItemStack(this, 1, 5));
+        }
     }
-
 
 }

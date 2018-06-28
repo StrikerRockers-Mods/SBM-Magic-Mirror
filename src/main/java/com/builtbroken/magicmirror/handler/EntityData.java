@@ -3,7 +3,6 @@ package com.builtbroken.magicmirror.handler;
 import com.builtbroken.magicmirror.MagicMirror;
 import com.builtbroken.magicmirror.capability.IMirrorData;
 import com.builtbroken.magicmirror.network.PacketClientUpdate;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -47,7 +46,6 @@ public class EntityData
      */
     public static int MAX_TELEPORT_DISTANCE = 200;
 
-
     //Last tick location data
     public World world;
     public int x;
@@ -73,6 +71,7 @@ public class EntityData
     private int timeOnSurfaceCooldown;
     private int timeWithoutSkyCooldown;
     private TeleportPos potentialTP;
+
 
     /**
      * Used to prevent the data from updating too often
@@ -199,7 +198,7 @@ public class EntityData
                 if (!canSeeSky)
                 {
                     timeWithoutSky++;
-                    if (potentialTP != null && timeWithoutSky >= TP_SET_DELAY)
+                    if  (potentialTP != null && timeWithoutSky >= TP_SET_DELAY)
                     {
                         getHandler(player).setLocation(player, potentialTP);
                         reset();
@@ -260,7 +259,7 @@ public class EntityData
 
     public boolean checkCanSeeSky()
     {
-        return !world.provider.hasSkyLight() && (world.canBlockSeeSky(new BlockPos(x,y,z) ) || doRayCheckSky());
+        return world.provider.hasSkyLight() && (world.canBlockSeeSky(new BlockPos(x,y+1,z) ) || doRayCheckSky());
     }
 
     //Does a basic check to see if there is a solid block above us
@@ -270,8 +269,7 @@ public class EntityData
         {
             //TODO check if block is full
             IBlockState state = world.getBlockState(new BlockPos(x,y,z));
-            Block block = state.getBlock();
-            if (block.getMaterial(state) != Material.AIR && block.isOpaqueCube(state))
+            if (state.getMaterial() != Material.AIR && state.isOpaqueCube())
             {
                 return false;
             }

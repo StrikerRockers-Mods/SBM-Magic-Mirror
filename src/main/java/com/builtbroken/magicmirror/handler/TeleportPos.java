@@ -53,7 +53,7 @@ public class TeleportPos
         if (player instanceof EntityPlayerMP)
         {
             player.sendStatusMessage(new TextComponentString("*Poof*"), true);
-            player.setPositionAndRotation(x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
+            ((EntityPlayerMP) player).connection.setPlayerLocation(x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
         }
     }
 

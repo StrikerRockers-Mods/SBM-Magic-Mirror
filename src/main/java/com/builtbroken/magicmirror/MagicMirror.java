@@ -143,12 +143,12 @@ public class MagicMirror
         String[] types = {"_blank", "_shine", "_glow"};
         for (String type : types)
         {
+            resLocs[0] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "silver" + type), "inventory");
             resLocs[1] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "gold" + type), "inventory");
             resLocs[2] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "diamond" + type), "inventory");
             resLocs[3] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "silver_dirty" + type), "inventory");
             resLocs[5] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "diamond_dirty" + type), "inventory");
             resLocs[4] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "gold_dirty" + type), "inventory");
-            resLocs[0] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "silver" + type), "inventory");
         }
         ModelLoader.setCustomMeshDefinition(itemMirror, new ModelMirror());
         ModelBakery.registerItemVariants(itemMirror, resLocs);
