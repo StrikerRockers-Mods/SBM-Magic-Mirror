@@ -21,6 +21,7 @@ import java.util.HashMap;
 @Mod.EventBusSubscriber(modid = MagicMirror.DOMAIN)
 public class LootTableHandler
 {
+    ///setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/simple_dungeon"}
     //TODO add configs for drop rates and what loot tables to support
     private static final String VANILLA_LOOT_POOL_ID = "main";
     private static HashMap<ResourceLocation, LootEntry[]> lootEntries = new HashMap();
@@ -30,46 +31,46 @@ public class LootTableHandler
         //Normal loot
         lootEntries.put(LootTableList.CHESTS_END_CITY_TREASURE,
                 new LootEntry[]{
-                        newEntry(MirrorSubType.SILVER_DIRTY, 1, 1),
-                        newEntry(MirrorSubType.SILVER, 0, 2)
+                        newEntry(MirrorSubType.SILVER_DIRTY, 5, 1),
+                        newEntry(MirrorSubType.SILVER, 2, 2)
                 }
         );
         lootEntries.put(LootTableList.CHESTS_SIMPLE_DUNGEON,
                 new LootEntry[]{
-                        newEntry(MirrorSubType.SILVER_DIRTY, 1, 1),
-                        newEntry(MirrorSubType.SILVER, 0, 2)
+                        newEntry(MirrorSubType.SILVER_DIRTY, 5, 1),
+                        newEntry(MirrorSubType.SILVER, 2, 2)
                 });
         lootEntries.put(LootTableList.CHESTS_VILLAGE_BLACKSMITH,
                 new LootEntry[]{
-                        newEntry(MirrorSubType.SILVER_DIRTY, 1, 1),
-                        newEntry(MirrorSubType.SILVER, 0, 2)
+                        newEntry(MirrorSubType.SILVER_DIRTY, 5, 1),
+                        newEntry(MirrorSubType.SILVER, 2, 2)
                 });
         lootEntries.put(LootTableList.CHESTS_ABANDONED_MINESHAFT,
                 new LootEntry[]{
-                        newEntry(MirrorSubType.SILVER_DIRTY, 1, 1),
-                        newEntry(MirrorSubType.SILVER, 0, 2)
+                        newEntry(MirrorSubType.SILVER_DIRTY, 5, 1),
+                        newEntry(MirrorSubType.SILVER, 2, 2)
                 });
         lootEntries.put(LootTableList.CHESTS_NETHER_BRIDGE,
                 new LootEntry[]{
-                        newEntry(MirrorSubType.SILVER_DIRTY, 1, 1),
-                        newEntry(MirrorSubType.SILVER, 0, 2)
+                        newEntry(MirrorSubType.SILVER_DIRTY, 5, 1),
+                        newEntry(MirrorSubType.SILVER, 2, 2)
                 });
         lootEntries.put(LootTableList.CHESTS_STRONGHOLD_LIBRARY,
                 new LootEntry[]{
-                        newEntry(MirrorSubType.SILVER_DIRTY, 1, 1),
-                        newEntry(MirrorSubType.SILVER, 0, 2)
+                        newEntry(MirrorSubType.SILVER_DIRTY, 5, 1),
+                        newEntry(MirrorSubType.SILVER, 2, 2)
                 });
         lootEntries.put(LootTableList.CHESTS_DESERT_PYRAMID,
                 new LootEntry[]{
-                        newEntry(MirrorSubType.SILVER_DIRTY, 1, 1),
-                        newEntry(MirrorSubType.SILVER, 0, 2)
+                        newEntry(MirrorSubType.SILVER_DIRTY, 5, 1),
+                        newEntry(MirrorSubType.SILVER, 2, 2)
                 });
 
         //Rare loot
         lootEntries.put(LootTableList.CHESTS_JUNGLE_TEMPLE,
                 new LootEntry[]{
-                        newEntry(MirrorSubType.SILVER_DIRTY, 5, 1),
-                        newEntry(MirrorSubType.SILVER, 2, 2),
+                        newEntry(MirrorSubType.SILVER_DIRTY, 15, 1),
+                        newEntry(MirrorSubType.SILVER, 12, 2),
                         newEntry(MirrorSubType.GOLD_DIRTY, 8, 1),
                         newEntry(MirrorSubType.GOLD, 3, 2),
                         newEntry(MirrorSubType.DIAMOND_DIRTY, 1, 1),
@@ -77,8 +78,8 @@ public class LootTableHandler
                 });
         lootEntries.put(LootTableList.CHESTS_WOODLAND_MANSION,
                 new LootEntry[]{
-                        newEntry(MirrorSubType.SILVER_DIRTY, 5, 1),
-                        newEntry(MirrorSubType.SILVER, 2, 2),
+                        newEntry(MirrorSubType.SILVER_DIRTY, 15, 1),
+                        newEntry(MirrorSubType.SILVER, 12, 2),
                         newEntry(MirrorSubType.GOLD_DIRTY, 8, 1),
                         newEntry(MirrorSubType.GOLD, 3, 2),
                         newEntry(MirrorSubType.DIAMOND_DIRTY, 1, 1),
@@ -87,8 +88,8 @@ public class LootTableHandler
 
         lootEntries.put(LootTableList.CHESTS_STRONGHOLD_CROSSING,
                 new LootEntry[]{
-                        newEntry(MirrorSubType.SILVER_DIRTY, 5, 1),
-                        newEntry(MirrorSubType.SILVER, 2, 2),
+                        newEntry(MirrorSubType.SILVER_DIRTY, 15, 1),
+                        newEntry(MirrorSubType.SILVER, 12, 2),
                         newEntry(MirrorSubType.GOLD_DIRTY, 8, 1),
                         newEntry(MirrorSubType.GOLD, 3, 2),
                         newEntry(MirrorSubType.DIAMOND_DIRTY, 1, 1),
@@ -96,8 +97,8 @@ public class LootTableHandler
                 });
         lootEntries.put(LootTableList.CHESTS_STRONGHOLD_CORRIDOR,
                 new LootEntry[]{
-                        newEntry(MirrorSubType.SILVER_DIRTY, 5, 1),
-                        newEntry(MirrorSubType.SILVER, 2, 2),
+                        newEntry(MirrorSubType.SILVER_DIRTY, 15, 1),
+                        newEntry(MirrorSubType.SILVER, 12, 2),
                         newEntry(MirrorSubType.GOLD_DIRTY, 8, 1),
                         newEntry(MirrorSubType.GOLD, 3, 2),
                         newEntry(MirrorSubType.DIAMOND_DIRTY, 1, 1),
