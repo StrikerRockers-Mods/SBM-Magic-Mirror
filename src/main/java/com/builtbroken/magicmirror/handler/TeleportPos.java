@@ -4,7 +4,7 @@ import com.builtbroken.magicmirror.config.ConfigCost;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 /**
@@ -52,7 +52,7 @@ public class TeleportPos
         //TODO use different sounds for leave and enter
         if (player instanceof EntityPlayerMP)
         {
-            player.sendStatusMessage(new TextComponentString("*Poof*"), true);
+            player.sendStatusMessage(new TextComponentTranslation("item.sbmmagicmirror:magicmirror.teleported"), true);
             ((EntityPlayerMP) player).connection.setPlayerLocation(x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
         }
     }
@@ -80,7 +80,7 @@ public class TeleportPos
      */
     public int getDistanceInt(Entity entity)
     {
-        return (int) Math.sqrt(Math.pow(entity.posX - x, 2) + Math.pow(entity.posY - y, 2) + Math.pow(entity.posZ - z, 2));
+        return (int) Math.sqrt(Math.pow(entity.posX - x + 0.5, 2) + Math.pow(entity.posY - y + 0.5, 2) + Math.pow(entity.posZ - z + 0.5, 2));
     }
 
     /**
@@ -91,6 +91,6 @@ public class TeleportPos
      */
     public double getDistance(Entity entity)
     {
-        return Math.sqrt(Math.pow(entity.posX - x, 2) + Math.pow(entity.posY - y, 2) + Math.pow(entity.posZ - z, 2));
+        return Math.sqrt(Math.pow(entity.posX - x + 0.5, 2) + Math.pow(entity.posY - y + 0.5, 2) + Math.pow(entity.posZ - z + 0.5, 2));
     }
 }

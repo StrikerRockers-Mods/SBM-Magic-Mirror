@@ -14,9 +14,7 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -61,23 +59,6 @@ public class ItemMirror extends Item
         return null;
     }
 
-    public static void sep(String translation, List list)
-    {
-        sep(null, translation, list);
-    }
-
-    public static void sep(String color, String translation, List list)
-    {
-        if (translation != null && !translation.isEmpty())
-        {
-            String[] strings = translation.split(",");
-            for (String s : strings)
-            {
-                list.add((color != null ? color : "") + s.trim());
-            }
-        }
-    }
-
     @Override
     public int getMaxItemUseDuration(ItemStack stack)
     {
@@ -110,12 +91,16 @@ public class ItemMirror extends Item
                 playerIn.sendStatusMessage(new TextComponentTranslation("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
                 return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
             }
-            else if (getHandler(playerIn).getXpTeleportCost(playerIn) > playerIn.experienceTotal)
+            else if (getHandler(playerIn).getXpTeleportCost() > playerIn.experienceTotal)
             {
-                String translation = I18n.translateToLocal("item.sbmmagicmirror:magicmirror.error.xp");
-                translation = translation.replace("%1", "" + (getHandler(playerIn).getXpTeleportCost(playerIn) - playerIn.experienceTotal));
-                translation = translation.replace("%2", "" + getHandler(playerIn).getXpTeleportCost(playerIn));
-                playerIn.sendStatusMessage(new TextComponentString(translation), true);
+                int needed_xp = (int) Math.ceil(getHandler(playerIn).getXpTeleportCost());
+                int missing_xp = needed_xp - playerIn.experienceTotal;
+
+                playerIn.sendStatusMessage(new TextComponentTranslation(
+                                "item.sbmmagicmirror:magicmirror.error.xp",
+                                missing_xp,
+                                needed_xp),
+                        true);
                 return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
             }
         }
@@ -150,8 +135,7 @@ public class ItemMirror extends Item
         }
 
         //If normal player and config, check for XP cost
-        float xp = getHandler(player).getXpTeleportCost(player);
-        return player.experienceTotal >= xp;
+        return player.experienceTotal >= getHandler(player).getXpTeleportCost();
     }
 
     @Override
@@ -166,13 +150,30 @@ public class ItemMirror extends Item
             }
             else
             {
-                sep(net.minecraft.client.resources.I18n.format(getUnlocalizedName() + ".desc"), tooltip);
+                sep(net.minecraft.client.resources.I18n.format(getUnlocalizedName() + ".desc" + (ConfigCost.USE_XP ? ".xp" : "")), tooltip);
             }
 
-            if(MagicMirror.runningAsDev)
+            if (MagicMirror.runningAsDev)
             {
                 tooltip.add("" + currentXPCostToTeleport);
                 tooltip.add("" + currentMirrorState);
+            }
+        }
+    }
+
+    public static void sep(String translation, List list)
+    {
+        sep(null, translation, list);
+    }
+
+    public static void sep(String color, String translation, List list)
+    {
+        if (translation != null && !translation.isEmpty())
+        {
+            String[] strings = translation.split(",");
+            for (String s : strings)
+            {
+                list.add((color != null ? color : "") + s.trim());
             }
         }
     }

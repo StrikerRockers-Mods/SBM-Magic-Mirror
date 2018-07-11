@@ -2,16 +2,20 @@ package com.builtbroken.magicmirror.capability;
 
 import com.builtbroken.magicmirror.handler.TeleportPos;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
 
 /**
  * Created by StrikerRocker on 22/6/18.
  */
 public class MirrorData implements IMirrorData
 {
+    public EntityPlayer player;
 
     private TeleportPos teleportPos;
+
+    public MirrorData(EntityPlayer player)
+    {
+        this.player = player;
+    }
 
     @Override
     public boolean hasLocation()
@@ -26,13 +30,7 @@ public class MirrorData implements IMirrorData
     }
 
     @Override
-    public void setLocation(TeleportPos potentialTP)
-    {
-        teleportPos = potentialTP;
-    }
-
-    @Override
-    public float getXpTeleportCost(EntityPlayer player)
+    public float getXpTeleportCost()
     {
         if (hasLocation())
         {
@@ -42,13 +40,8 @@ public class MirrorData implements IMirrorData
     }
 
     @Override
-    public void setLocation(EntityPlayer player, TeleportPos potentialTP)
+    public void setLocation(TeleportPos potentialTP)
     {
-        setLocation(potentialTP);
-        String translation = I18n.translateToLocal("item.sbmmagicmirror:magicmirror.location.set").replace("%1", "" + potentialTP.x).replace("%2", "" + potentialTP.y).replace("%3", "" + potentialTP.z);
-        if (translation != null)
-        {
-            player.sendStatusMessage(new TextComponentString(translation), true);
-        }
+        teleportPos = potentialTP;
     }
 }

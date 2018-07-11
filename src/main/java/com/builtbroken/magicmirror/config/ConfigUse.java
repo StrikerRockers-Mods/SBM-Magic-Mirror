@@ -48,10 +48,10 @@ public class ConfigUse
     /**
      * Distance in X & Z that player can travel and still teleport
      */
-    @Config.Name("max_teleport_distance")
-    @Config.Comment("Distance in meters (block) to allow a player to teleport to from current position.")
-    @Config.RangeInt(min = 5)
-    public static int MAX_TELEPORT_DISTANCE = 200;
+    @Config.Name("teleport_break_distance")
+    @Config.Comment("Distance in meters (block) ,ignoring height, for teleport position to be cleared. Set to -1 to allow unlimited range.")
+    @Config.RangeInt(min = -1)
+    public static int TELEPORT_BREAK_DISTANCE = 200;
 
     @Config.Name("teleport_hold_delay")
     @Config.Comment("Time in ticks (20 ticks a second) to hold the mirror in order to teleport")

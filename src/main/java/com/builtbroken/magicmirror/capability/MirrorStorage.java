@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
  */
 public class MirrorStorage implements Capability.IStorage<IMirrorData>
 {
-
     @CapabilityInject(IMirrorData.class)
     public static final Capability<IMirrorData> CAPABILITY_MIRROR = null;
 
@@ -39,7 +38,11 @@ public class MirrorStorage implements Capability.IStorage<IMirrorData>
     public void readNBT(Capability<IMirrorData> capability, IMirrorData instance, EnumFacing side, NBTBase nbt)
     {
         final NBTTagCompound tag = (NBTTagCompound) nbt;
-        instance.setLocation(new TeleportPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"), tag.getFloat("yaw"), tag.getFloat("pitch")));
+        instance.setLocation(new TeleportPos(
+                tag.getInteger("x"),
+                tag.getInteger("y"),
+                tag.getInteger("z"),
+                tag.getFloat("yaw"),
+                tag.getFloat("pitch")));
     }
-
 }

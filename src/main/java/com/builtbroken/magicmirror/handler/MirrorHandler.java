@@ -1,16 +1,21 @@
 package com.builtbroken.magicmirror.handler;
 
 import com.builtbroken.magicmirror.MagicMirror;
+import com.builtbroken.magicmirror.capability.IMirrorData;
 import com.builtbroken.magicmirror.capability.MirrorProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
+
+import static com.builtbroken.magicmirror.capability.MirrorStorage.CAPABILITY_MIRROR;
 
 /**
  * Handles everything to do with the mirror activation and tracking
@@ -53,6 +58,15 @@ public class MirrorHandler
         return userData.get(player.getUniqueID());
     }
 
+    public static IMirrorData getData(EntityPlayer entity)
+    {
+        if (entity.hasCapability(CAPABILITY_MIRROR, EnumFacing.DOWN))
+        {
+            return entity.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN);
+        }
+        return null;
+    }
+
     /**
      * Called to teleport the player to his set mirror location
      *
@@ -60,17 +74,30 @@ public class MirrorHandler
      */
     public static void teleport(EntityPlayer player)
     {
-        if (EntityData.getHandler(player).hasLocation()) {
-            EntityData.getHandler(player).getLocation().teleport(player);
+        if (getData(player).hasLocation())
+        {
+            getData(player).getLocation().teleport(player);
         }
     }
+
+    @SubscribeEvent
+    public static void onChangeDimension(EntityTravelToDimensionEvent event)
+    {
+        if (event.getEntity() instanceof EntityPlayer)
+        {
+            EntityPlayer player = (EntityPlayer) event.getEntity();
+            get(player).reset();
+            getData(player).setLocation(null);
+        }
+    }
+
 
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event)
     {
         if (event.getObject() instanceof EntityPlayer)
         {
-            event.addCapability(CAP_KEY, new MirrorProvider());
+            event.addCapability(CAP_KEY, new MirrorProvider((EntityPlayer) event.getObject()));
         }
     }
 }

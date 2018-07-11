@@ -1,5 +1,6 @@
 package com.builtbroken.magicmirror.capability;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -15,8 +16,12 @@ import static com.builtbroken.magicmirror.capability.MirrorStorage.CAPABILITY_MI
  */
 public class MirrorProvider implements ICapabilitySerializable<NBTTagCompound>
 {
+    private final IMirrorData mirrorData;
 
-    IMirrorData instance = CAPABILITY_MIRROR.getDefaultInstance();
+    public MirrorProvider(EntityPlayer player)
+    {
+        mirrorData = new MirrorData(player);
+    }
 
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
@@ -28,18 +33,18 @@ public class MirrorProvider implements ICapabilitySerializable<NBTTagCompound>
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
     {
-        return hasCapability(capability, facing) ? CAPABILITY_MIRROR.<T>cast(instance) : null;
+        return hasCapability(capability, facing) ? CAPABILITY_MIRROR.cast(mirrorData) : null;
     }
 
     @Override
     public NBTTagCompound serializeNBT()
     {
-        return (NBTTagCompound) CAPABILITY_MIRROR.getStorage().writeNBT(CAPABILITY_MIRROR, instance, null);
+        return (NBTTagCompound) CAPABILITY_MIRROR.getStorage().writeNBT(CAPABILITY_MIRROR, mirrorData, null);
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt)
     {
-        CAPABILITY_MIRROR.getStorage().readNBT(CAPABILITY_MIRROR, instance, null, nbt);
+        CAPABILITY_MIRROR.getStorage().readNBT(CAPABILITY_MIRROR, mirrorData, null, nbt);
     }
 }

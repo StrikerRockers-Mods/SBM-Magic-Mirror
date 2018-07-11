@@ -73,7 +73,7 @@ public class MagicMirror
     public void preInit(FMLPreInitializationEvent event)
     {
         //Capability
-        CapabilityManager.INSTANCE.register(IMirrorData.class, new MirrorStorage(), () -> new MirrorData());
+        CapabilityManager.INSTANCE.register(IMirrorData.class, new MirrorStorage(), () -> new MirrorData(null));
 
         //Network
         network = NetworkRegistry.INSTANCE.newSimpleChannel(DOMAIN);
