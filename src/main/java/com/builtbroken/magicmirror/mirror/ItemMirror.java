@@ -54,7 +54,6 @@ public class ItemMirror extends Item
 
     public static IMirrorData getHandler(EntityPlayer entity)
     {
-
         if (entity.hasCapability(CAPABILITY_MIRROR, EnumFacing.DOWN))
         {
             return entity.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN);
@@ -168,6 +167,12 @@ public class ItemMirror extends Item
             else
             {
                 sep(net.minecraft.client.resources.I18n.format(getUnlocalizedName() + ".desc"), tooltip);
+            }
+
+            if(MagicMirror.runningAsDev)
+            {
+                tooltip.add("" + currentXPCostToTeleport);
+                tooltip.add("" + currentMirrorState);
             }
         }
     }

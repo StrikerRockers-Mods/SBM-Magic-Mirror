@@ -126,11 +126,12 @@ public class EntityData
                 this.y = (int) player.posY;
                 this.z = (int) player.posZ;
 
+                //Break teleport location if we get too far away
                 if (ConfigUse.MAX_TELEPORT_DISTANCE > -1 && getHandler(player).hasLocation())
                 {
                     TeleportPos pos = getHandler(player).getLocation();
-                    double distance = Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2) + Math.pow(pos.z - z, 2));
-                    if (distance >= ConfigUse.MAX_TELEPORT_DISTANCE)
+                    double distance = Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2) + Math.pow(pos.z - z, 2)); //TODO optimize
+                    if (distance >= ConfigUse.MAX_TELEPORT_DISTANCE) //TODO add seperate config for break distance
                     {
                         //TODO add config to disable this action
                         player.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN).setLocation(null);
