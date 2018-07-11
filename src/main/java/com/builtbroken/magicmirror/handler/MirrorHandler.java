@@ -27,7 +27,7 @@ public class MirrorHandler
     public static final HashMap<UUID, TeleportPos> userIDToMirrorLocation = new HashMap();
     public static final HashMap<UUID, EntityData> userData = new HashMap();
 
-    public static final MirrorHandler INSTANCE = new MirrorHandler();
+    public static final ResourceLocation CAP_KEY = new ResourceLocation(MagicMirror.DOMAIN, "teleport_position");
 
     private MirrorHandler()
     {
@@ -40,14 +40,18 @@ public class MirrorHandler
      */
     public static void updateUserData(EntityPlayer player)
     {
+        get(player).update(player);
+    }
+
+    public static EntityData get(EntityPlayer player)
+    {
         final UUID id = player.getGameProfile().getId();
         if (!userData.containsKey(id))
         {
             userData.put(player.getUniqueID(), new EntityData(player));
         }
-        userData.get(player.getUniqueID()).update(player);
+        return userData.get(player.getUniqueID());
     }
-
 
     /**
      * Called to teleport the player to his set mirror location
@@ -66,7 +70,7 @@ public class MirrorHandler
     {
         if (event.getObject() instanceof EntityPlayer)
         {
-            event.addCapability(new ResourceLocation(MagicMirror.DOMAIN, "teleportPOS"), new MirrorProvider());
+            event.addCapability(CAP_KEY, new MirrorProvider());
         }
     }
 }

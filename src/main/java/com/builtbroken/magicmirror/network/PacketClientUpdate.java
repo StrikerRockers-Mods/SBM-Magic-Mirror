@@ -1,6 +1,7 @@
 package com.builtbroken.magicmirror.network;
 
 import com.builtbroken.magicmirror.mirror.ItemMirror;
+import com.builtbroken.magicmirror.mirror.MirrorState;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -45,7 +46,7 @@ public class PacketClientUpdate implements IMessage
         public IMessage onMessage(PacketClientUpdate message, MessageContext ctx)
         {
             ItemMirror.currentXPCostToTeleport = message.xpCost;
-            ItemMirror.currentMirrorState = message.state;
+            ItemMirror.currentMirrorState = MirrorState.get(message.state);
             return null;
         }
     }

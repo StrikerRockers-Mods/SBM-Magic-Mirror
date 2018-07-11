@@ -3,24 +3,16 @@ package com.builtbroken.magicmirror;
 import com.builtbroken.magicmirror.capability.IMirrorData;
 import com.builtbroken.magicmirror.capability.MirrorData;
 import com.builtbroken.magicmirror.capability.MirrorStorage;
-import com.builtbroken.magicmirror.config.ConfigLoot;
 import com.builtbroken.magicmirror.mirror.ItemMirror;
 import com.builtbroken.magicmirror.network.PacketClientUpdate;
 import net.minecraft.item.Item;
-import net.minecraft.world.storage.loot.LootPool;
-import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -53,14 +45,7 @@ public class MagicMirror
      * Information output thing
      */
     public static final Logger logger = LogManager.getLogger("SBM-MagicMirror");
-
     public static final String DOMAIN = "sbmmagicmirror";
-
-    @Mod.Instance(DOMAIN)
-    public static MagicMirror INSTANCE;
-
-    @SidedProxy(clientSide = "com.builtbroken.magicmirror.ClientProxy", serverSide = "com.builtbroken.magicmirror.CommonProxy")
-    public static CommonProxy proxy;
 
     /**
      * Mirror item used to activate and tick mirror handler
@@ -68,38 +53,6 @@ public class MagicMirror
     public static ItemMirror itemMirror;
 
     public static SimpleNetworkWrapper network;
-
-    //@SubscribeEvent
-    public static void registerLoot(LootTableLoadEvent event)
-    {
-        final String VANILLA_LOOT_POOL_ID = "main";
-        LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
-        if (lootPool != null)
-        {
-            if (event.getName().equals(LootTableList.CHESTS_ABANDONED_MINESHAFT))
-            {
-                if (ConfigLoot.EnableAsDungeonLoot)
-                {
-                    //TODO monster drops (super rare, .0003) and chest drop(common, 0.15)
-                    //TODO make diamond and gold mirror super rare
-                    //WeightedRandomChestContent silverMirror = new WeightedRandomChestContent(itemMirror, 3, 0, 1, 5); //TODO add config to tweek drop rate
-                    //WeightedRandomChestContent goldMirror = new WeightedRandomChestContent(itemMirror, 4, 0, 1, 2); //TODO add config to tweek drop rate
-                    //WeightedRandomChestContent diamondMirror = new WeightedRandomChestContent(itemMirror, 5, 0, 1, 1); //TODO add config to tweek drop rate
-
-                    //ChestGenHooks.getInfo(ChestGenHooks.MINESHAFT_CORRIDOR).addItem(silverMirror);
-                    //ChestGenHooks.getInfo(ChestGenHooks.PYRAMID_DESERT_CHEST).addItem(silverMirror);
-                    //ChestGenHooks.getInfo(ChestGenHooks.PYRAMID_JUNGLE_CHEST).addItem(silverMirror);
-                    //ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_CORRIDOR).addItem(silverMirror);
-                    //ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_LIBRARY).addItem(silverMirror);
-                    //ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_CROSSING).addItem(silverMirror);
-                    //ChestGenHooks.getInfo(ChestGenHooks.DUNGEON_CHEST).addItem(silverMirror);
-
-                    //ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_LIBRARY).addItem(goldMirror);
-                    //ChestGenHooks.getInfo(ChestGenHooks.STRONGHOLD_LIBRARY).addItem(diamondMirror);
-                }
-            }
-        }
-    }
 
     @SubscribeEvent
     public static void registerItem(RegistryEvent.Register<Item> registry)
@@ -119,27 +72,11 @@ public class MagicMirror
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-        CapabilityManager.INSTANCE.register(IMirrorData.class, new MirrorStorage(), MirrorData.class);
+        //Capability
+        CapabilityManager.INSTANCE.register(IMirrorData.class, new MirrorStorage(), () -> new MirrorData());
 
+        //Network
         network = NetworkRegistry.INSTANCE.newSimpleChannel(DOMAIN);
         network.registerMessage(PacketClientUpdate.Handler.class, PacketClientUpdate.class, 1, Side.CLIENT);
-    }
-
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
-    {
-    }
-
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
-    }
-
-    @Mod.EventHandler
-    public void serverStarting(FMLServerStartingEvent event)
-    {
-        //TODO add admin command to clear location of mirror
-        //TODO add admin command to activate mirror
-        //TODO add admin command to  set location
     }
 }

@@ -41,7 +41,7 @@ public class ItemMirror extends Item
     /**
      * CLIENT DATA,  0 = nothing, 1 = can be activated, 2 = is charged / will record data, 3 = is charged & can be activated
      */
-    public static byte currentMirrorState = 0;
+    public static MirrorState currentMirrorState = MirrorState.DEFAULT;
 
     public ItemMirror()
     {
@@ -144,8 +144,15 @@ public class ItemMirror extends Item
      */
     public boolean canTeleport(EntityPlayer player)
     {
+        //Ignore cost if XP use is disabled or player is in creative mode
+        if (!ConfigCost.USE_XP || player.capabilities.isCreativeMode)
+        {
+            return true;
+        }
+
+        //If normal player and config, check for XP cost
         float xp = getHandler(player).getXpTeleportCost(player);
-        return (int) xp > 0 && (!ConfigCost.USE_XP || player.capabilities.isCreativeMode || player.experienceTotal >= xp);
+        return player.experienceTotal >= xp;
     }
 
     @Override
@@ -182,13 +189,10 @@ public class ItemMirror extends Item
     {
         if (tab == CreativeTabs.TOOLS)
         {
-            items.add(new ItemStack(this, 1, 0));
-            items.add(new ItemStack(this, 1, 1));
-            items.add(new ItemStack(this, 1, 2));
-            items.add(new ItemStack(this, 1, 3));
-            items.add(new ItemStack(this, 1, 4));
-            items.add(new ItemStack(this, 1, 5));
+            for (MirrorSubType type : MirrorSubType.values())
+            {
+                items.add(new ItemStack(this, 1, type.ordinal()));
+            }
         }
     }
-
 }

@@ -76,7 +76,9 @@ public class EntityData
     {
 
         if (entity.hasCapability(CAPABILITY_MIRROR, EnumFacing.DOWN))
+        {
             return entity.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN);
+        }
         return null;
     }
 
@@ -110,7 +112,7 @@ public class EntityData
     public void update(EntityPlayer player)
     {
         //Ensure we only update once a tick, Patch to fix if user has several mirrors in inventory
-        if (lastTickTime == 0 || (System.currentTimeMillis() - lastTickTime) >= 50)
+        if (!player.world.isRemote && (lastTickTime == 0 || (System.currentTimeMillis() - lastTickTime) >= 50))
         {
             tick++;
             if (tick + 1 >= Integer.MAX_VALUE)
@@ -177,7 +179,7 @@ public class EntityData
                 if (!canSeeSky)
                 {
                     timeWithoutSky++;
-                    if  (potentialTP != null && timeWithoutSky >= ConfigUse.TP_SET_DELAY)
+                    if (potentialTP != null && timeWithoutSky >= ConfigUse.TP_SET_DELAY)
                     {
                         getHandler(player).setLocation(player, potentialTP);
                         reset();
@@ -187,7 +189,8 @@ public class EntityData
                         timeAboveGround = 0;
                         timeOnSurfaceCooldown = 0;
                     }
-                } else if (timeWithoutSkyCooldown++ >= ConfigUse.SKY_COOLDOWN)
+                }
+                else if (timeWithoutSkyCooldown++ >= ConfigUse.SKY_COOLDOWN)
                 {
                     timeWithoutSky = 0;
                     timeWithoutSkyCooldown = 0;
@@ -219,15 +222,21 @@ public class EntityData
                 //Send packet update to usernew BlockPos(x,y,z)
                 if (player instanceof EntityPlayerMP && (tick == 1 || tick % 5 == 0))
                 {
-                    MagicMirror.network.sendTo(new PacketClientUpdate((int) getHandler(player).getXpTeleportCost(player), timeAboveGround >= ConfigUse.MIN_SURFACE_TIME, getHandler(player).hasLocation()), (EntityPlayerMP) player);
+                    MagicMirror.network.sendTo(new PacketClientUpdate(
+                                    (int) getHandler(player).getXpTeleportCost(player),
+                                    timeAboveGround >= ConfigUse.MIN_SURFACE_TIME,
+                                    getHandler(player).hasLocation()),
+                            (EntityPlayerMP) player);
 
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 if (MagicMirror.runningAsDev)
                 {
                     MagicMirror.logger.error("EntityData failed to update information about entity", e);
-                } else
+                }
+                else
                 {
                     MagicMirror.logger.error("EntityData failed to update information about entity, errored with message: [ " + e.getMessage() + " ] enable dev mod for more detailed info.");
                 }
@@ -238,7 +247,7 @@ public class EntityData
 
     public boolean checkCanSeeSky()
     {
-        return world.provider.hasSkyLight() && (world.canBlockSeeSky(new BlockPos(x,y+1,z) ) || doRayCheckSky());
+        return world.provider.hasSkyLight() && (world.canBlockSeeSky(new BlockPos(x, y + 1, z)) || doRayCheckSky());
     }
 
     //Does a basic check to see if there is a solid block above us
@@ -247,7 +256,7 @@ public class EntityData
         for (int y = this.y; y <= world.getActualHeight(); y++)
         {
             //TODO check if block is full
-            IBlockState state = world.getBlockState(new BlockPos(x,y,z));
+            IBlockState state = world.getBlockState(new BlockPos(x, y, z));
             if (state.getMaterial() != Material.AIR && state.isOpaqueCube())
             {
                 return false;
