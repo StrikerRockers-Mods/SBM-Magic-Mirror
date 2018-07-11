@@ -1,6 +1,6 @@
 package com.builtbroken.magicmirror.handler;
 
-import com.builtbroken.magicmirror.MagicMirror;
+import com.builtbroken.magicmirror.config.ConfigCost;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -65,11 +65,11 @@ public class TeleportPos
      */
     public float getTeleportCost(EntityPlayer player)
     {
-        if (MagicMirror.FLAT_RATE)
+        if (ConfigCost.FLAT_RATE)
         {
-            return MagicMirror.XP_COST;
+            return ConfigCost.XP_COST;
         }
-        return getDistanceInt(player) * MagicMirror.XP_COST;
+        return getDistanceInt(player) * ConfigCost.XP_COST;
     }
 
     /**

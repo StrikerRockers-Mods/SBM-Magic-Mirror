@@ -2,6 +2,7 @@ package com.builtbroken.magicmirror.handler;
 
 import com.builtbroken.magicmirror.MagicMirror;
 import com.builtbroken.magicmirror.capability.IMirrorData;
+import com.builtbroken.magicmirror.config.ConfigUse;
 import com.builtbroken.magicmirror.network.PacketClientUpdate;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -24,28 +25,6 @@ import static com.builtbroken.magicmirror.capability.MirrorStorage.CAPABILITY_MI
  */
 public class EntityData
 {
-    //TODO make per use configurable threw commands [within reason]
-    /**
-     * Amount of time to delay before resetting sky lose count
-     */
-    public static final int SKY_COOLDOWN = 5 * 20; //5 seconds
-    /**
-     * Amount of time to delay before resetting onSurface count
-     */
-    public static final int SURFACE_COOLDOWN = 5 * 20; //5 seconds
-    /**
-     * Amount of time to delay before setting teleport location
-     */
-    public static final int TP_SET_DELAY = 5 * 20; //5 seconds
-    /**
-     * Minimal amount of time the user has to be on the surface for the mirror to record a location
-     */
-    public static final int MIN_SURFACE_TIME = 60 * 20; //1 min
-    /**
-     * Distance in X & Z that player can travel and still teleport
-     */
-    public static int MAX_TELEPORT_DISTANCE = 200;
-
     //Last tick location data
     public World world;
     public int x;
@@ -145,11 +124,11 @@ public class EntityData
                 this.y = (int) player.posY;
                 this.z = (int) player.posZ;
 
-                if (MAX_TELEPORT_DISTANCE > -1 && getHandler(player).hasLocation())
+                if (ConfigUse.MAX_TELEPORT_DISTANCE > -1 && getHandler(player).hasLocation())
                 {
                     TeleportPos pos = getHandler(player).getLocation();
                     double distance = Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2) + Math.pow(pos.z - z, 2));
-                    if (distance >= MAX_TELEPORT_DISTANCE)
+                    if (distance >= ConfigUse.MAX_TELEPORT_DISTANCE)
                     {
                         //TODO add config to disable this action
                         player.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN).setLocation(null);
@@ -170,11 +149,11 @@ public class EntityData
                 if (stillOnSurface)
                 {
                     timeAboveGround++;
-                    if (getHandler(player).hasLocation() && timeAboveGround >= SURFACE_COOLDOWN)
+                    if (getHandler(player).hasLocation() && timeAboveGround >= ConfigUse.SURFACE_COOLDOWN)
                     {
                         getHandler(player).setLocation(player, null);
                     }
-                    if (timeAboveGround == MIN_SURFACE_TIME)
+                    if (timeAboveGround == ConfigUse.MIN_SURFACE_TIME)
                     {
                         player.sendStatusMessage(new TextComponentString("Mirror charged by the love of the sky"), true);
                         //TODO Randomize message
@@ -182,7 +161,7 @@ public class EntityData
                     }
                 }
                 //if min time -> can't see sky -> no tp loc -> set loc
-                else if (timeAboveGround >= MIN_SURFACE_TIME)
+                else if (timeAboveGround >= ConfigUse.MIN_SURFACE_TIME)
                 {
                     if (!canSeeSky && potentialTP == null)
                     {
@@ -198,17 +177,17 @@ public class EntityData
                 if (!canSeeSky)
                 {
                     timeWithoutSky++;
-                    if  (potentialTP != null && timeWithoutSky >= TP_SET_DELAY)
+                    if  (potentialTP != null && timeWithoutSky >= ConfigUse.TP_SET_DELAY)
                     {
                         getHandler(player).setLocation(player, potentialTP);
                         reset();
                     }
-                    if (timeOnSurfaceCooldown++ >= SURFACE_COOLDOWN)
+                    if (timeOnSurfaceCooldown++ >= ConfigUse.SURFACE_COOLDOWN)
                     {
                         timeAboveGround = 0;
                         timeOnSurfaceCooldown = 0;
                     }
-                } else if (timeWithoutSkyCooldown++ >= SKY_COOLDOWN)
+                } else if (timeWithoutSkyCooldown++ >= ConfigUse.SKY_COOLDOWN)
                 {
                     timeWithoutSky = 0;
                     timeWithoutSkyCooldown = 0;
@@ -240,7 +219,7 @@ public class EntityData
                 //Send packet update to usernew BlockPos(x,y,z)
                 if (player instanceof EntityPlayerMP && (tick == 1 || tick % 5 == 0))
                 {
-                    MagicMirror.network.sendTo(new PacketClientUpdate((int) getHandler(player).getXpTeleportCost(player), timeAboveGround >= MIN_SURFACE_TIME, getHandler(player).hasLocation()), (EntityPlayerMP) player);
+                    MagicMirror.network.sendTo(new PacketClientUpdate((int) getHandler(player).getXpTeleportCost(player), timeAboveGround >= ConfigUse.MIN_SURFACE_TIME, getHandler(player).hasLocation()), (EntityPlayerMP) player);
 
                 }
             } catch (Exception e)

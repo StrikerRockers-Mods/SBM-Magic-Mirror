@@ -3,19 +3,12 @@ package com.builtbroken.magicmirror;
 import com.builtbroken.magicmirror.capability.IMirrorData;
 import com.builtbroken.magicmirror.capability.MirrorData;
 import com.builtbroken.magicmirror.capability.MirrorStorage;
-import com.builtbroken.magicmirror.handler.ConfigMain;
-import com.builtbroken.magicmirror.handler.EntityData;
+import com.builtbroken.magicmirror.config.ConfigLoot;
 import com.builtbroken.magicmirror.mirror.ItemMirror;
-import com.builtbroken.magicmirror.mirror.ModelMirror;
 import com.builtbroken.magicmirror.network.PacketClientUpdate;
-import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTableList;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -63,19 +56,6 @@ public class MagicMirror
 
     public static final String DOMAIN = "sbmmagicmirror";
 
-    /**
-     * Should we use XP when teleporting with the mirror
-     */
-    public static boolean USE_XP = true;
-    /**
-     * Is the xp cost a flat rate, true will consume xp equal to {@link #XP_COST}, false will use it as a multiplier per meter traveled
-     */
-    public static boolean FLAT_RATE = false;
-    /**
-     * Amount of XP consumed, @see {@link #FLAT_RATE} for additional details
-     */
-    public static float XP_COST = 1;
-
     @Mod.Instance(DOMAIN)
     public static MagicMirror INSTANCE;
 
@@ -89,7 +69,7 @@ public class MagicMirror
 
     public static SimpleNetworkWrapper network;
 
-    @SubscribeEvent
+    //@SubscribeEvent
     public static void registerLoot(LootTableLoadEvent event)
     {
         final String VANILLA_LOOT_POOL_ID = "main";
@@ -98,7 +78,7 @@ public class MagicMirror
         {
             if (event.getName().equals(LootTableList.CHESTS_ABANDONED_MINESHAFT))
             {
-                if (ConfigMain.EnableAsDungeonLoot)
+                if (ConfigLoot.EnableAsDungeonLoot)
                 {
                     //TODO monster drops (super rare, .0003) and chest drop(common, 0.15)
                     //TODO make diamond and gold mirror super rare
@@ -124,7 +104,7 @@ public class MagicMirror
     @SubscribeEvent
     public static void registerItem(RegistryEvent.Register<Item> registry)
     {
-        registry.getRegistry().register(itemMirror);
+        registry.getRegistry().register(itemMirror = new ItemMirror());
     }
 
     @SubscribeEvent
@@ -136,22 +116,13 @@ public class MagicMirror
         }
     }
 
-    @SubscribeEvent
-    public static void registerItem(ModelRegistryEvent event)
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event)
     {
-        ResourceLocation[] resLocs = new ResourceLocation[6];
-        String[] types = {"_blank", "_shine", "_glow"};
-        for (String type : types)
-        {
-            resLocs[0] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "silver" + type), "inventory");
-            resLocs[1] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "gold" + type), "inventory");
-            resLocs[2] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "diamond" + type), "inventory");
-            resLocs[3] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "silver_dirty" + type), "inventory");
-            resLocs[5] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "diamond_dirty" + type), "inventory");
-            resLocs[4] = new ModelResourceLocation(new ResourceLocation(DOMAIN, "gold_dirty" + type), "inventory");
-        }
-        ModelLoader.setCustomMeshDefinition(itemMirror, new ModelMirror());
-        ModelBakery.registerItemVariants(itemMirror, resLocs);
+        CapabilityManager.INSTANCE.register(IMirrorData.class, new MirrorStorage(), MirrorData.class);
+
+        network = NetworkRegistry.INSTANCE.newSimpleChannel(DOMAIN);
+        network.registerMessage(PacketClientUpdate.Handler.class, PacketClientUpdate.class, 1, Side.CLIENT);
     }
 
     @Mod.EventHandler
@@ -170,20 +141,5 @@ public class MagicMirror
         //TODO add admin command to clear location of mirror
         //TODO add admin command to activate mirror
         //TODO add admin command to  set location
-    }
-
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event)
-    {
-        //Created item
-        itemMirror = new ItemMirror();
-
-        //Load configs
-        EntityData.MAX_TELEPORT_DISTANCE = ConfigMain.Max_Teleport_Distance;
-        ItemMirror.TICKS_BEFORE_TELEPORT = ConfigMain.Activation_Time;
-        CapabilityManager.INSTANCE.register(IMirrorData.class, new MirrorStorage(), MirrorData.class);
-
-        network = NetworkRegistry.INSTANCE.newSimpleChannel(DOMAIN);
-        network.registerMessage(PacketClientUpdate.Handler.class, PacketClientUpdate.class, 1, Side.CLIENT);
     }
 }

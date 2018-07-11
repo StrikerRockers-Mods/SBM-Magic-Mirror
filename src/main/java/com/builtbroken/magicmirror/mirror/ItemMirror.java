@@ -2,6 +2,8 @@ package com.builtbroken.magicmirror.mirror;
 
 import com.builtbroken.magicmirror.MagicMirror;
 import com.builtbroken.magicmirror.capability.IMirrorData;
+import com.builtbroken.magicmirror.config.ConfigCost;
+import com.builtbroken.magicmirror.config.ConfigUse;
 import com.builtbroken.magicmirror.handler.MirrorHandler;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
@@ -32,7 +34,6 @@ import static com.builtbroken.magicmirror.capability.MirrorStorage.CAPABILITY_MI
  */
 public class ItemMirror extends Item
 {
-    public static int TICKS_BEFORE_TELEPORT = 5 * 20; //5 seconds
     /**
      * CLIENT DATA, how much XP it costs to teleport
      */
@@ -55,7 +56,9 @@ public class ItemMirror extends Item
     {
 
         if (entity.hasCapability(CAPABILITY_MIRROR, EnumFacing.DOWN))
+        {
             return entity.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN);
+        }
         return null;
     }
 
@@ -79,14 +82,14 @@ public class ItemMirror extends Item
     @Override
     public int getMaxItemUseDuration(ItemStack stack)
     {
-        return TICKS_BEFORE_TELEPORT + 1;
+        return ConfigUse.TICKS_BEFORE_TELEPORT + 1;
     }
 
     @Override
     public void onUsingTick(ItemStack stack, EntityLivingBase player, int count)
     {
         //TODO play charging sound effect
-        if (getMaxItemUseDuration(stack)-count >= 1 && player instanceof EntityPlayer)
+        if (getMaxItemUseDuration(stack) - count >= 1 && player instanceof EntityPlayer)
         {
             MirrorHandler.teleport((EntityPlayer) player);
         }
@@ -101,12 +104,14 @@ public class ItemMirror extends Item
             {
                 //TODO play charge start sound effect
                 playerIn.setActiveHand(handIn);
-                return new ActionResult<>(EnumActionResult.SUCCESS,playerIn.getHeldItem(handIn));
-            } else if (!getHandler(playerIn).hasLocation())
+                return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+            }
+            else if (!getHandler(playerIn).hasLocation())
             {
                 playerIn.sendStatusMessage(new TextComponentTranslation("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
                 return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
-            } else if (getHandler(playerIn).getXpTeleportCost(playerIn) > playerIn.experienceTotal)
+            }
+            else if (getHandler(playerIn).getXpTeleportCost(playerIn) > playerIn.experienceTotal)
             {
                 String translation = I18n.translateToLocal("item.sbmmagicmirror:magicmirror.error.xp");
                 translation = translation.replace("%1", "" + (getHandler(playerIn).getXpTeleportCost(playerIn) - playerIn.experienceTotal));
@@ -140,7 +145,7 @@ public class ItemMirror extends Item
     public boolean canTeleport(EntityPlayer player)
     {
         float xp = getHandler(player).getXpTeleportCost(player);
-        return (int) xp > 0 && (!MagicMirror.USE_XP || player.capabilities.isCreativeMode || player.experienceTotal >= xp);
+        return (int) xp > 0 && (!ConfigCost.USE_XP || player.capabilities.isCreativeMode || player.experienceTotal >= xp);
     }
 
     @Override
@@ -152,7 +157,8 @@ public class ItemMirror extends Item
             if (!worldIn.provider.hasSkyLight())
             {
                 sep("\u00a7c", net.minecraft.client.resources.I18n.format(getUnlocalizedName() + ".error.nosky"), tooltip);
-            } else
+            }
+            else
             {
                 sep(net.minecraft.client.resources.I18n.format(getUnlocalizedName() + ".desc"), tooltip);
             }
@@ -174,7 +180,8 @@ public class ItemMirror extends Item
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        if (tab != CreativeTabs.INVENTORY) {
+        if (tab == CreativeTabs.TOOLS)
+        {
             items.add(new ItemStack(this, 1, 0));
             items.add(new ItemStack(this, 1, 1));
             items.add(new ItemStack(this, 1, 2));

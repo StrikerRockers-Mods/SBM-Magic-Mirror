@@ -2,7 +2,6 @@ package com.builtbroken.magicmirror.network;
 
 import com.builtbroken.magicmirror.mirror.ItemMirror;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -45,11 +44,8 @@ public class PacketClientUpdate implements IMessage
         @Override
         public IMessage onMessage(PacketClientUpdate message, MessageContext ctx)
         {
-            Minecraft.getMinecraft().addScheduledTask(() ->
-            {
-                ItemMirror.currentXPCostToTeleport = message.xpCost;
-                ItemMirror.currentMirrorState = message.state;
-            });
+            ItemMirror.currentXPCostToTeleport = message.xpCost;
+            ItemMirror.currentMirrorState = message.state;
             return null;
         }
     }
