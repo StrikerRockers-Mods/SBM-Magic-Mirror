@@ -1,6 +1,8 @@
 package com.builtbroken.magicmirror.config;
 
-import net.minecraftforge.common.config.Config;
+
+import com.builtbroken.magicmirror.MagicMirror;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -8,7 +10,13 @@ import net.minecraftforge.common.config.Config;
  */
 public class ConfigLoot
 {
-    @Config.Comment("Set to true to allow loot to spawn in vanilla minecraft dungeons")
-    @Config.Name("enable_dungeon_loot")
-    public static boolean EnableAsDungeonLoot = true;
+    public static ForgeConfigSpec.BooleanValue enableAsDungeonLoot;
+
+    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER)
+    {
+        SERVER_BUILDER.comment("Loot");
+
+        enableAsDungeonLoot = SERVER_BUILDER.comment("Set to true to allow loot to spawn in vanilla minecraft dungeons")
+                .define(MagicMirror.DOMAIN + ".enable_dungeon_loot", true);
+    }
 }

@@ -1,48 +1,75 @@
 buildscript {
     repositories {
-        mavenCentral()
+        maven { url = 'https://files.minecraftforge.net/maven' }
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
+        mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath "org.ajoberstar:grgit:2.1.0"
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+    }
+}
+apply plugin: 'net.minecraftforge.gradle'
+// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+apply plugin: 'eclipse'
+
+version = '0.0.2'
+group = 'magic-mirror'
+archivesBaseName = 'SBM-Magic-Mirror'	
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+minecraft {
+    mappings channel: 'snapshot', version: '20180921-1.13'
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
     }
 }
 
-plugins {
-    id 'com.matthewprenger.cursegradle' version '1.0.9'
-    id 'net.saliman.cobertura' version '2.2.5'
-    id 'com.github.kt3k.coveralls' version '2.0.1'
-    id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.55"
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.13.2-25.0.60'
 }
 
-apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/1.12.2/index/index.gradle'
-apply plugin: 'com.github.kt3k.coveralls'
-apply plugin: 'jacoco'
-apply plugin: "org.ajoberstar.grgit"
-
-println archivesBaseName
-
-dependencies
-        {
-            testCompile 'junit:junit:4.11'
-        }
-
-
-jacocoTestReport {
-    reports {
-        xml.enabled = true // coveralls plugin depends on xml format report
-        html.enabled = true
+// Example for how to get properties into the manifest for reading by the runtime..
+jar {
+    manifest {
+        attributes([
+            "Specification-Title": "SBM-Magic-Mirror",
+            "Specification-Vendor": "Built Broken Modding",
+            "Specification-Version": "0.0.2", // We are version 1 of ourselves
+            "Implementation-Title": project.name,
+            "Implementation-Version": "${version}",
+            "Implementation-Vendor" :"Built Broken Modding",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
     }
 }

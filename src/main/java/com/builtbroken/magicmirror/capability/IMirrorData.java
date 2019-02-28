@@ -28,11 +28,4 @@ public interface IMirrorData
      * @param potentialTP
      */
     void setLocation(TeleportPos potentialTP);
-
-    /**
-     * Gets the cost of teleporting for the user
-     *
-     * @return xp cost of teleporting
-     */
-    float getXpTeleportCost();
 }

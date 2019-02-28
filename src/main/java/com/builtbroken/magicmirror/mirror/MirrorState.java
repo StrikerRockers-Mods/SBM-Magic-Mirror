@@ -8,20 +8,18 @@ public enum MirrorState
 {
     DEFAULT("_blank"),
     USEABLE("_glow"),
-    CHARGED("_shine"),
-    CHARGED_USEABLE("_shine");
+    CHARGED("_shine");
 
-    public final String model_suffix;
+    public final String suffix;
 
-    MirrorState(String model_suffix)
+    MirrorState(String suffix)
     {
-        this.model_suffix = model_suffix;
+        this.suffix = suffix;
     }
 
     public static MirrorState get(byte state)
     {
-        if (state >= 0 && state < values().length)
-        {
+        if (state >= 0 && state < values().length) {
             return values()[state];
         }
         return DEFAULT;

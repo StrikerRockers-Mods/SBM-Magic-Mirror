@@ -27,19 +27,14 @@ public class LootEntryItemStack extends LootEntry
     @Override
     public void addLoot(Collection<ItemStack> stacks, Random rand, LootContext context)
     {
-        if (!itemStack.isEmpty())
-        {
+        if (!itemStack.isEmpty()) {
             ItemStack loot_stack = itemStack.copy();
             loot_stack.setCount(random.nextInt(loot_stack.getCount()));
-            if (loot_stack.getCount() < loot_stack.getMaxStackSize())
-            {
+            if (loot_stack.getCount() < loot_stack.getMaxStackSize()) {
                 stacks.add(loot_stack);
-            }
-            else
-            {
+            } else {
                 int i = loot_stack.getCount();
-                while (i > 0)
-                {
+                while (i > 0) {
                     ItemStack itemstack1 = loot_stack.copy();
                     itemstack1.setCount(Math.min(loot_stack.getMaxStackSize(), i));
                     i -= itemstack1.getCount();

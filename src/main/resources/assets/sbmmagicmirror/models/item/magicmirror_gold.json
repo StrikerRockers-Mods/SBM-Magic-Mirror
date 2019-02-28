@@ -1,0 +1,32 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "sbmmagicmirror:items/gold_clean"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "sbmmagicmirror:state": 0
+      },
+      "model": "sbmmagicmirror:item/magicmirror_gold_blank"
+    },
+    {
+      "predicate": {
+        "sbmmagicmirror:state": 1
+      },
+      "model": "sbmmagicmirror:item/magicmirror_gold_glow"
+    },
+    {
+      "predicate": {
+        "sbmmagicmirror:state": 2
+      },
+      "model": "sbmmagicmirror:item/magicmirror_gold_shine"
+    },
+    {
+      "predicate": {
+        "sbmmagicmirror:state": 3
+      },
+      "model": "sbmmagicmirror:item/magicmirror_gold_blank"
+    }
+  ]
+}

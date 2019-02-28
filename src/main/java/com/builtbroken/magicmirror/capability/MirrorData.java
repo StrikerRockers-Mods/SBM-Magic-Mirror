@@ -1,20 +1,16 @@
 package com.builtbroken.magicmirror.capability;
 
 import com.builtbroken.magicmirror.handler.TeleportPos;
-import net.minecraft.entity.player.EntityPlayer;
 
 /**
  * Created by StrikerRocker on 22/6/18.
  */
 public class MirrorData implements IMirrorData
 {
-    public EntityPlayer player;
-
     private TeleportPos teleportPos;
 
-    public MirrorData(EntityPlayer player)
+    public MirrorData()
     {
-        this.player = player;
     }
 
     @Override
@@ -27,16 +23,6 @@ public class MirrorData implements IMirrorData
     public TeleportPos getLocation()
     {
         return teleportPos;
-    }
-
-    @Override
-    public float getXpTeleportCost()
-    {
-        if (hasLocation())
-        {
-            return getLocation().getTeleportCost(player);
-        }
-        return 0;
     }
 
     @Override

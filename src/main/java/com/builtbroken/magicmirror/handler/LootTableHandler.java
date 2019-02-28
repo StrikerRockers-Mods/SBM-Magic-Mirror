@@ -9,8 +9,8 @@ import net.minecraft.world.storage.loot.LootEntry;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
 
@@ -26,8 +26,7 @@ public class LootTableHandler
     private static final String VANILLA_LOOT_POOL_ID = "main";
     private static HashMap<ResourceLocation, LootEntry[]> lootEntries = new HashMap();
 
-    static
-    {
+    static {
         //Normal loot
         lootEntries.put(LootTableList.CHESTS_END_CITY_TREASURE,
                 new LootEntry[]{
@@ -109,7 +108,7 @@ public class LootTableHandler
     private static final LootEntry newEntry(MirrorSubType type, int weight, int quality)
     {
         return new LootEntryItemStack(MagicMirror.DOMAIN + ":mirror." + type.name().toLowerCase().replace("_", "."),
-                new ItemStack(MagicMirror.itemMirror, 1, MirrorSubType.SILVER_DIRTY.ordinal()),
+                new ItemStack(MagicMirror.silverMirror, 1),
                 weight, quality
         );
     }
@@ -118,16 +117,12 @@ public class LootTableHandler
     @SubscribeEvent
     public static void registerLoot(LootTableLoadEvent event)
     {
-        if (ConfigLoot.EnableAsDungeonLoot)
-        {
-            if (lootEntries.containsKey(event.getName()))
-            {
+        if (ConfigLoot.enableAsDungeonLoot.get()) {
+            if (lootEntries.containsKey(event.getName())) {
                 LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
-                if (lootPool != null)
-                {
+                if (lootPool != null) {
                     LootEntry[] entries = lootEntries.get(event.getName());
-                    for (LootEntry entry : entries)
-                    {
+                    for (LootEntry entry : entries) {
                         lootPool.addEntry(entry);
                     }
                 }

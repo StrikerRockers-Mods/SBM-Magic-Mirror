@@ -1,0 +1,18 @@
+{
+  "item.sbmmagicmirror.magicmirror_gold_dirty": "Magic Mirror",
+  "item.sbmmagicmirror.magicmirror_diamond_dirty": "Magic Mirror",
+  "item.sbmmagicmirror.magicmirror_silver_dirty": "Magic Mirror",
+  "item.sbmmagicmirror.magicmirror_gold": "Magic Mirror",
+  "item.sbmmagicmirror.magicmirror_diamond": "Magic Mirror",
+  "item.sbmmagicmirror.magicmirror_silver": "Magic Mirror",
+  "item.sbmmagicmirror:magicmirror.desc.xp": "Allows teleporting to your last recorded position above ground, at cost of XP",
+  "item.sbmmagicmirror:magicmirror.desc": "Allows teleporting to your last recorded position above ground",
+  "item.sbmmagicmirror:magicmirror.location": "Your location is %dx %dy %dz and will cost %d xp to teleport",
+  "item.sbmmagicmirror:magicmirror.location.set": "Mirror location set to %dx %dy %dz",
+  "item.sbmmagicmirror:magicmirror.charged": "Mirror charged by the love of the sky",
+  "item.sbmmagicmirror:magicmirror.teleported": "*Poof*",
+  "item.sbmmagicmirror:magicmirror.error.nolocation": "No location stored.",
+  "item.sbmmagicmirror:magicmirror.error.xp": "You are missing %d xp out of %d needed.",
+  "item.sbmmagicmirror:magicmirror.error.nosky": "§cMirror only works in, dimension with a sky",
+  "item.sbmmagicmirror:magicmirror.error.link.broken.distance": "Mirror link broken, you have walked too far away"
+}

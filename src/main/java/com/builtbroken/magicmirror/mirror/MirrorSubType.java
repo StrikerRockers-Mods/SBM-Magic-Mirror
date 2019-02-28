@@ -1,9 +1,5 @@
 package com.builtbroken.magicmirror.mirror;
 
-import com.builtbroken.magicmirror.MagicMirror;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.util.ResourceLocation;
-
 /**
  * Enum of sub types
  *
@@ -19,33 +15,8 @@ public enum MirrorSubType
     GOLD_DIRTY,
     DIAMOND_DIRTY;
 
-    private final ModelResourceLocation[] stateResourceLocation;
 
     MirrorSubType()
     {
-        stateResourceLocation = new ModelResourceLocation[MirrorState.values().length];
-        for (int i = 0; i < MirrorState.values().length; i++)
-        {
-            final String name = name().toLowerCase() + MirrorState.values()[i].model_suffix;
-            stateResourceLocation[i] =
-                    new ModelResourceLocation(
-                            new ResourceLocation(MagicMirror.DOMAIN, name),
-                            "inventory"
-                    );
-        }
-    }
-
-    public static MirrorSubType get(int meta)
-    {
-        if (meta >= 0 && meta < values().length)
-        {
-            return values()[meta];
-        }
-        return SILVER;
-    }
-
-    public ModelResourceLocation getStateResourceLocation(MirrorState currentMirrorState)
-    {
-        return stateResourceLocation[currentMirrorState.ordinal()];
     }
 }

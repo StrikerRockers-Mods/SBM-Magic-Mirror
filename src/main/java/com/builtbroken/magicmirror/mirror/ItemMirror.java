@@ -1,23 +1,25 @@
 package com.builtbroken.magicmirror.mirror;
 
 import com.builtbroken.magicmirror.MagicMirror;
-import com.builtbroken.magicmirror.capability.IMirrorData;
 import com.builtbroken.magicmirror.config.ConfigCost;
 import com.builtbroken.magicmirror.config.ConfigUse;
 import com.builtbroken.magicmirror.handler.MirrorHandler;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -35,42 +37,53 @@ public class ItemMirror extends Item
     /**
      * CLIENT DATA, how much XP it costs to teleport
      */
-    public static int currentXPCostToTeleport = 0;
+    public float currentXPCostToTeleport = 0;
     /**
      * CLIENT DATA,  0 = nothing, 1 = can be activated, 2 = is charged / will record data, 3 = is charged & can be activated
      */
-    public static MirrorState currentMirrorState = MirrorState.DEFAULT;
+    public MirrorState currentMirrorState = MirrorState.DEFAULT;
 
-    public ItemMirror()
+    public ItemMirror(MirrorSubType type)
     {
-        setMaxStackSize(1);
-        setHasSubtypes(true);
-        setCreativeTab(CreativeTabs.TOOLS);
-        setUnlocalizedName(MagicMirror.DOMAIN + ":magicmirror");
-        setRegistryName(MagicMirror.DOMAIN + ":magicmirror");
+        super(new Properties().maxStackSize(1).group(ItemGroup.TOOLS));
+        setRegistryName(MagicMirror.DOMAIN, "magicmirror_" + type.toString().toLowerCase());
+        addPropertyOverride(new ResourceLocation(MagicMirror.DOMAIN, "state"), (stack, world, entity) -> entity instanceof EntityPlayer ? getState((EntityPlayer) entity) : 0);
     }
 
-    public static IMirrorData getHandler(EntityPlayer entity)
+    public float getState(EntityPlayer player)
     {
-        if (entity.hasCapability(CAPABILITY_MIRROR, EnumFacing.DOWN))
-        {
-            return entity.getCapability(CAPABILITY_MIRROR, EnumFacing.DOWN);
+        boolean isCharged = MirrorHandler.get(player).timeAboveGround >= ConfigUse.MIN_SURFACE_TIME.get();
+        if (!player.getCapability(CAPABILITY_MIRROR).isPresent()) {
+            return 0;
         }
-        return null;
+        boolean isActive = MirrorHandler.getData(player).hasLocation();
+        return (isCharged && isActive ? 3 : isCharged ? 2 : isActive ? 1 : 0);
     }
 
     @Override
-    public int getMaxItemUseDuration(ItemStack stack)
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int p_77663_4_, boolean p_77663_5_)
     {
-        return ConfigUse.TICKS_BEFORE_TELEPORT + 1;
+        //TODO play sound effect when mirror is ready to use (has location, user has XP)
+        //TODO play sound effect when mirror has charged(Is able to store a location)
+        //TODO play sound effect when mirror loses charge or location (User leaves teleport area)
+        //TODO add a way to disable users from using the mirror, CONFIG?
+        if (entity instanceof EntityPlayer) {
+            MirrorHandler.updateUserData((EntityPlayer) entity, stack);
+        }
+    }
+
+    @Override
+    public int getUseDuration(ItemStack p_77626_1_)
+    {
+        return ConfigUse.TICKS_BEFORE_TELEPORT.get() + 1;
+
     }
 
     @Override
     public void onUsingTick(ItemStack stack, EntityLivingBase player, int count)
     {
         //TODO play charging sound effect
-        if (getMaxItemUseDuration(stack) - count >= 1 && player instanceof EntityPlayer)
-        {
+        if (getUseDuration(stack) - count >= 1 && player instanceof EntityPlayer) {
             MirrorHandler.teleport((EntityPlayer) player);
         }
     }
@@ -78,22 +91,16 @@ public class ItemMirror extends Item
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        if (!worldIn.isRemote)
-        {
-            if (canTeleport(playerIn))
-            {
+        if (!worldIn.isRemote && MirrorHandler.getData(playerIn) != null) {
+            if (canTeleport(playerIn)) {
                 //TODO play charge start sound effect
                 playerIn.setActiveHand(handIn);
                 return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
-            }
-            else if (!getHandler(playerIn).hasLocation())
-            {
+            } else if (!MirrorHandler.getData(playerIn).hasLocation()) {
                 playerIn.sendStatusMessage(new TextComponentTranslation("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
                 return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
-            }
-            else if (getHandler(playerIn).getXpTeleportCost() > playerIn.experienceTotal)
-            {
-                int needed_xp = (int) Math.ceil(getHandler(playerIn).getXpTeleportCost());
+            } else if (MirrorHandler.getData(playerIn).getLocation().getTeleportCost(playerIn) > playerIn.experienceTotal) {
+                int needed_xp = (int) Math.ceil(MirrorHandler.getData(playerIn).getLocation().getTeleportCost(playerIn));
                 int missing_xp = needed_xp - playerIn.experienceTotal;
 
                 playerIn.sendStatusMessage(new TextComponentTranslation(
@@ -107,73 +114,34 @@ public class ItemMirror extends Item
         return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
     }
 
-    @Override
-    public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean b)
-    {
-        //TODO play sound effect when mirror is ready to use (has location, user has XP)
-        //TODO play sound effect when mirror has charged(Is able to store a location)
-        //TODO play sound effect when mirror loses charge or location (User leaves teleport area)
-        //TODO add a way to disable users from using the mirror, CONFIG?
-        if (entity instanceof EntityPlayer)
-        {
-            MirrorHandler.updateUserData((EntityPlayer) entity);
-        }
-    }
-
     /**
      * Can the user teleport
-     *
-     * @param player
-     * @return
      */
-    public boolean canTeleport(EntityPlayer player)
+    private boolean canTeleport(EntityPlayer player)
     {
         //Ignore cost if XP use is disabled or player is in creative mode
-        if (!ConfigCost.USE_XP || player.capabilities.isCreativeMode)
-        {
+        if (!ConfigCost.USE_XP.get() || player.abilities.isCreativeMode) {
             return true;
         }
 
         //If normal player and config, check for XP cost
-        return player.experienceTotal >= getHandler(player).getXpTeleportCost();
+        float xp = MirrorHandler.getData(player).getLocation().getTeleportCost(player);
+        return player.experienceTotal >= xp;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
+    public void addInformation(ItemStack p_77624_1_, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag p_77624_4_)
     {
-        if (worldIn != null)
-        {
-            if (!worldIn.provider.hasSkyLight())
-            {
-                sep("\u00a7c", net.minecraft.client.resources.I18n.format(getUnlocalizedName() + ".error.nosky"), tooltip);
-            }
-            else
-            {
-                sep(net.minecraft.client.resources.I18n.format(getUnlocalizedName() + ".desc" + (ConfigCost.USE_XP ? ".xp" : "")), tooltip);
+        if (worldIn != null) {
+            if (!worldIn.dimension.hasSkyLight()) {
+                tooltip.add(new TextComponentTranslation("item.sbmmagicmirror:magicmirror.error.nosky"));
+            } else {
+                tooltip.add(new TextComponentTranslation("item.sbmmagicmirror:magicmirror.desc" + (ConfigCost.USE_XP.get() ? ".xp" : "")));
             }
 
-            if (MagicMirror.runningAsDev)
-            {
-                tooltip.add("" + currentXPCostToTeleport);
-                tooltip.add("" + currentMirrorState);
-            }
-        }
-    }
-
-    public static void sep(String translation, List list)
-    {
-        sep(null, translation, list);
-    }
-
-    public static void sep(String color, String translation, List list)
-    {
-        if (translation != null && !translation.isEmpty())
-        {
-            String[] strings = translation.split(",");
-            for (String s : strings)
-            {
-                list.add((color != null ? color : "") + s.trim());
+            if (MagicMirror.runningAsDev) {
+                tooltip.add(new TextComponentString(currentXPCostToTeleport + ""));
+                tooltip.add(new TextComponentString(currentMirrorState + ""));
             }
         }
     }
@@ -181,24 +149,12 @@ public class ItemMirror extends Item
     @Override
     public boolean hasEffect(ItemStack stack)
     {
-        return stack.isItemEnchanted();
+        return stack.isEnchanted();
     }
 
     @Override
     public EnumRarity getRarity(ItemStack stack)
     {
         return EnumRarity.RARE;
-    }
-
-    @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
-    {
-        if (tab == CreativeTabs.TOOLS)
-        {
-            for (MirrorSubType type : MirrorSubType.values())
-            {
-                items.add(new ItemStack(this, 1, type.ordinal()));
-            }
-        }
     }
 }

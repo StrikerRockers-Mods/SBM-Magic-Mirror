@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
 
 /**
  * Stores the location to teleport the user to
@@ -21,7 +20,6 @@ public class TeleportPos
     public final float yaw;
     public final float pitch;
 
-    private World world;
 
     public TeleportPos(Entity e)
     {
@@ -40,8 +38,6 @@ public class TeleportPos
 
     /**
      * Triggers the teleport for the user
-     *
-     * @param player
      */
     public void teleport(EntityPlayer player)
     {
@@ -50,8 +46,7 @@ public class TeleportPos
         //TODO use purple smoke
         //TODO play sound effect at both locations
         //TODO use different sounds for leave and enter
-        if (player instanceof EntityPlayerMP)
-        {
+        if (player instanceof EntityPlayerMP) {
             player.sendStatusMessage(new TextComponentTranslation("item.sbmmagicmirror:magicmirror.teleported"), true);
             ((EntityPlayerMP) player).connection.setPlayerLocation(x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
         }
@@ -59,35 +54,25 @@ public class TeleportPos
 
     /**
      * Cost in XP to teleport to the location
-     *
-     * @param player
-     * @return
      */
     public float getTeleportCost(EntityPlayer player)
     {
-        if (ConfigCost.FLAT_RATE)
-        {
-            return ConfigCost.XP_COST;
+        if (ConfigCost.FLAT_RATE.get()) {
+            return ConfigCost.XP_COST.get();
         }
-        return getDistanceInt(player) * ConfigCost.XP_COST;
+        return getDistanceInt(player) * ConfigCost.XP_COST.get();
     }
 
     /**
      * Distance to the location from the entity
-     *
-     * @param entity
-     * @return
      */
-    public int getDistanceInt(Entity entity)
+    private int getDistanceInt(Entity entity)
     {
         return (int) Math.sqrt(Math.pow(entity.posX - x + 0.5, 2) + Math.pow(entity.posY - y + 0.5, 2) + Math.pow(entity.posZ - z + 0.5, 2));
     }
 
     /**
      * Distance to the location from the entity
-     *
-     * @param entity
-     * @return
      */
     public double getDistance(Entity entity)
     {
