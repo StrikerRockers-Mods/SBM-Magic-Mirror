@@ -3,6 +3,7 @@ package com.builtbroken.magicmirror.handler;
 import com.builtbroken.magicmirror.MagicMirror;
 import com.builtbroken.magicmirror.capability.IMirrorData;
 import com.builtbroken.magicmirror.capability.MirrorProvider;
+import com.builtbroken.magicmirror.config.ConfigCost;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
@@ -29,7 +30,6 @@ public class MirrorHandler
     /**
      * Username to teleport location, saves when game closes
      */
-    public static final HashMap<UUID, TeleportPos> userIDToMirrorLocation = new HashMap();
     public static final HashMap<UUID, EntityData> userData = new HashMap();
 
     public static final ResourceLocation CAP_KEY = new ResourceLocation(MagicMirror.DOMAIN, "teleport_position");
@@ -77,6 +77,10 @@ public class MirrorHandler
         if (getData(player).hasLocation())
         {
             getData(player).getLocation().teleport(player);
+            if (ConfigCost.USE_XP)
+            {
+                player.addExperienceLevel((int) -getData(player).getLocation().getTeleportCost(player));
+            }
         }
     }
 

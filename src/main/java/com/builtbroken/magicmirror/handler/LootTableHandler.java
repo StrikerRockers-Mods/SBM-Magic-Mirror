@@ -118,7 +118,7 @@ public class LootTableHandler
     @SubscribeEvent
     public static void registerLoot(LootTableLoadEvent event)
     {
-        if (ConfigLoot.EnableAsDungeonLoot)
+        if (ConfigLoot.enableAsDungeonLoot)
         {
             if (lootEntries.containsKey(event.getName()))
             {

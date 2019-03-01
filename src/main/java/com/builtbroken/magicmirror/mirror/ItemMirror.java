@@ -46,7 +46,7 @@ public class ItemMirror extends Item
         setMaxStackSize(1);
         setHasSubtypes(true);
         setCreativeTab(CreativeTabs.TOOLS);
-        setUnlocalizedName(MagicMirror.DOMAIN + ":magicmirror");
+        setTranslationKey(MagicMirror.DOMAIN + ":magicmirror");
         setRegistryName(MagicMirror.DOMAIN + ":magicmirror");
     }
 
@@ -146,11 +146,11 @@ public class ItemMirror extends Item
         {
             if (!worldIn.provider.hasSkyLight())
             {
-                sep("\u00a7c", net.minecraft.client.resources.I18n.format(getUnlocalizedName() + ".error.nosky"), tooltip);
+                sep("\u00a7c", net.minecraft.client.resources.I18n.format(getTranslationKey() + ".error.nosky"), tooltip);
             }
             else
             {
-                sep(net.minecraft.client.resources.I18n.format(getUnlocalizedName() + ".desc" + (ConfigCost.USE_XP ? ".xp" : "")), tooltip);
+                sep(net.minecraft.client.resources.I18n.format(getTranslationKey() + ".desc" + (ConfigCost.USE_XP ? ".xp" : "")), tooltip);
             }
 
             if (MagicMirror.runningAsDev)
