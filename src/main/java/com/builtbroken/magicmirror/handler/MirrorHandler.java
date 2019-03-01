@@ -4,6 +4,7 @@ import com.builtbroken.magicmirror.MagicMirror;
 import com.builtbroken.magicmirror.capability.IMirrorData;
 import com.builtbroken.magicmirror.capability.MirrorProvider;
 import com.builtbroken.magicmirror.capability.MirrorStorage;
+import com.builtbroken.magicmirror.config.ConfigCost;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -73,7 +74,9 @@ public class MirrorHandler
                 iMirrorData.getLocation().teleport(player);
             }
         });
-        player.giveExperiencePoints((int) -getData(player).getLocation().getTeleportCost(player));
+        if (ConfigCost.USE_XP.get()) {
+            player.giveExperiencePoints((int) -getData(player).getLocation().getTeleportCost(player));
+        }
     }
 
     @SubscribeEvent
