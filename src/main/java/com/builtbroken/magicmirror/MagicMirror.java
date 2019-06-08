@@ -54,6 +54,17 @@ public class MagicMirror
 
     public static SimpleNetworkWrapper network;
 
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event)
+    {
+        //Capability
+        CapabilityManager.INSTANCE.register(IMirrorData.class, new MirrorStorage(), () -> new MirrorData(null));
+
+        //Network
+        network = NetworkRegistry.INSTANCE.newSimpleChannel(DOMAIN);
+        network.registerMessage(PacketClientUpdate.Handler.class, PacketClientUpdate.class, 1, Side.CLIENT);
+    }
+
     @SubscribeEvent
     public static void registerItem(RegistryEvent.Register<Item> registry)
     {
@@ -67,16 +78,5 @@ public class MagicMirror
         {
             ConfigManager.sync(DOMAIN, Config.Type.INSTANCE);
         }
-    }
-
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event)
-    {
-        //Capability
-        CapabilityManager.INSTANCE.register(IMirrorData.class, new MirrorStorage(), () -> new MirrorData(null));
-
-        //Network
-        network = NetworkRegistry.INSTANCE.newSimpleChannel(DOMAIN);
-        network.registerMessage(PacketClientUpdate.Handler.class, PacketClientUpdate.class, 1, Side.CLIENT);
     }
 }

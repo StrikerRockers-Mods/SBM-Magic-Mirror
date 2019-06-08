@@ -88,7 +88,7 @@ public class ItemMirror extends Item
             }
             else if (!getHandler(playerIn).hasLocation())
             {
-                playerIn.sendStatusMessage(new TextComponentTranslation("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
+                playerIn.sendStatusMessage(new TextComponentTranslation(getTranslationKey() + ".error.nolocation"), true);
                 return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
             }
             else if (getHandler(playerIn).getXpTeleportCost() > playerIn.experienceTotal)
@@ -97,7 +97,7 @@ public class ItemMirror extends Item
                 int missing_xp = needed_xp - playerIn.experienceTotal;
 
                 playerIn.sendStatusMessage(new TextComponentTranslation(
-                                "item.sbmmagicmirror:magicmirror.error.xp",
+                                getTranslationKey() + ".error.xp",
                                 missing_xp,
                                 needed_xp),
                         true);
