@@ -76,11 +76,17 @@ public class MirrorHandler
     {
         if (getData(player).hasLocation())
         {
+            //Teleport
             getData(player).getLocation().teleport(player);
+
+            //Use xp
             if (ConfigCost.USE_XP)
             {
                 player.addExperienceLevel((int) -getData(player).getLocation().getTeleportCost(player));
             }
+
+            //Clear teleport location, so we can only teleport once
+            getData(player).setLocation(null);
         }
     }
 
