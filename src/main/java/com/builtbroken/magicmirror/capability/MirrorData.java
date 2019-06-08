@@ -20,7 +20,7 @@ public class MirrorData implements IMirrorData
     @Override
     public boolean hasLocation()
     {
-        return teleportPos != null;
+        return teleportPos != null && teleportPos.y >= 0;
     }
 
     @Override
