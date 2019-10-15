@@ -1,16 +1,11 @@
-package com.builtbroken.magicmirror.config;
+package io.github.strikerrocker.magicmirror.config;
 
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
-import static com.builtbroken.magicmirror.MagicMirror.DOMAIN;
+import static io.github.strikerrocker.magicmirror.MagicMirror.DOMAIN;
 
-/**
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
- * Created by Dark(DarkGuardsman, Robert) on 7/10/2018.
- */
-public class ConfigUse
-{
+public class ConfigUse {
     /**
      * Amount of time to delay before resetting sky lose count
      */
@@ -38,8 +33,7 @@ public class ConfigUse
 
     public static ForgeConfigSpec.IntValue TICKS_BEFORE_TELEPORT; //5 seconds
 
-    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER)
-    {
+    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER) {
         SERVER_BUILDER.comment("Use");
 
         SKY_COOLDOWN = SERVER_BUILDER.comment("Time delay in ticks (20 ticks a second) before counting as not under the sky")

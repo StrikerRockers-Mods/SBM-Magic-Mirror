@@ -1,16 +1,9 @@
-package com.builtbroken.magicmirror.config;
+package io.github.strikerrocker.magicmirror.config;
 
-import com.builtbroken.magicmirror.MagicMirror;
+import io.github.strikerrocker.magicmirror.MagicMirror;
 import net.minecraftforge.common.ForgeConfigSpec;
 
-/**
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
- * Created by Dark(DarkGuardsman, Robert) on 7/10/2018.
- */
-//@Config(modid = MagicMirror.DOMAIN, name = "sbm/magic_mirror/cost")
-//@Config.LangKey("config.sbmmagicmirror:cost.title")
-public class ConfigCost
-{
+public class ConfigCost {
     /**
      * Should we use XP when teleporting with the mirror
      */
@@ -25,8 +18,7 @@ public class ConfigCost
      */
     public static ForgeConfigSpec.IntValue XP_COST;
 
-    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER)
-    {
+    public static void init(ForgeConfigSpec.Builder SERVER_BUILDER) {
         SERVER_BUILDER.comment("Costs");
 
         USE_XP = SERVER_BUILDER.comment("Should using the mirror require xp").define(MagicMirror.DOMAIN + ".use_xp", true);

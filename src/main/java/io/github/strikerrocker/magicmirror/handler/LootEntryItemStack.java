@@ -1,32 +1,20 @@
-package com.builtbroken.magicmirror.handler;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootEntry;
-import net.minecraft.world.storage.loot.conditions.LootCondition;
-
-import java.util.Collection;
-import java.util.Random;
+package io.github.strikerrocker.magicmirror.handler;
 
 /**
  * ItemStack version of {@link net.minecraft.world.storage.loot.LootEntryItem}
  */
-public class LootEntryItemStack extends LootEntry
-{
+/*
+public class LootEntryItemStack extends LootEntry {
     public static Random random = new Random();
     protected final ItemStack itemStack;
 
-    public LootEntryItemStack(String entryName, ItemStack itemIn, int weightIn, int qualityIn, LootCondition... conditionsIn)
-    {
+    public LootEntryItemStack(String entryName, ItemStack itemIn, int weightIn, int qualityIn, LootCondition... conditionsIn) {
         super(weightIn, qualityIn, conditionsIn, entryName);
         this.itemStack = itemIn;
     }
 
     @Override
-    public void addLoot(Collection<ItemStack> stacks, Random rand, LootContext context)
-    {
+    public void addLoot(Collection<ItemStack> stacks, Random rand, LootContext context) {
         if (!itemStack.isEmpty()) {
             ItemStack loot_stack = itemStack.copy();
             loot_stack.setCount(random.nextInt(loot_stack.getCount()));
@@ -45,8 +33,7 @@ public class LootEntryItemStack extends LootEntry
     }
 
     @Override
-    protected void serialize(JsonObject json, JsonSerializationContext context)
-    {
+    protected void serialize(JsonObject json, JsonSerializationContext context) {
 
     }
-}
+}*/
