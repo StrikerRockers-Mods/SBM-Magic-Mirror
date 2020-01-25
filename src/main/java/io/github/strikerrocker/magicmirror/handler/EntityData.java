@@ -42,7 +42,7 @@ public class EntityData {
     private int tick = 0;
 
     EntityData(Entity e) {
-        this(e.world, (int) e.posX, (int) e.posY, (int) e.posZ);
+        this(e.world, (int) e.getPosX(), (int) e.getPosY(), (int) e.getPosZ());
     }
 
     private EntityData(World world, int x, int y, int z) {
@@ -67,7 +67,7 @@ public class EntityData {
      * @return true if Y level is greater than world's horizon value
      */
     private boolean checkOnSurface() {
-        return playerBlockPos.getY() >= playerWorld.getDimension().getHorizon();
+        return playerBlockPos.getY() >= playerWorld.getDimension().getSeaLevel();
     }
 
     /**
@@ -186,9 +186,9 @@ public class EntityData {
     private void recordPosition(PlayerEntity player) {
         //Update position
         playerBlockPos = new BlockPos(
-                (int) Math.floor(player.posX),
-                (int) Math.floor(player.posY),
-                (int) Math.floor(player.posZ));
+                (int) Math.floor(player.getPosX()),
+                (int) Math.floor(player.getPosY()),
+                (int) Math.floor(player.getPosZ()));
     }
 
     private boolean checkCanSeeSky() {

@@ -18,7 +18,7 @@ public class TeleportPos {
 
 
     TeleportPos(Entity e) {
-        this((int) e.posX, (int) e.posY, (int) e.posZ, e.rotationYaw, e.rotationPitch);
+        this((int) e.getPosX(), (int) e.getPosY(), (int) e.getPosZ(), e.rotationYaw, e.rotationPitch);
     }
 
     public TeleportPos(int x, int y, int z, float yaw, float pitch) {
@@ -59,13 +59,13 @@ public class TeleportPos {
      * Distance to the location from the entity
      */
     private int getDistanceInt(Entity entity) {
-        return (int) Math.sqrt(Math.pow(entity.posX - x + 0.5, 2) + Math.pow(entity.posY - y + 0.5, 2) + Math.pow(entity.posZ - z + 0.5, 2));
+        return (int) Math.sqrt(Math.pow(entity.getPosX() - x + 0.5, 2) + Math.pow(entity.getPosY() - y + 0.5, 2) + Math.pow(entity.getPosZ() - z + 0.5, 2));
     }
 
     /**
      * Distance to the location from the entity
      */
     double getDistance(Entity entity) {
-        return Math.sqrt(Math.pow(entity.posX - x + 0.5, 2) + Math.pow(entity.posY - y + 0.5, 2) + Math.pow(entity.posZ - z + 0.5, 2));
+        return Math.sqrt(Math.pow(entity.getPosX() - x + 0.5, 2) + Math.pow(entity.getPosY() - y + 0.5, 2) + Math.pow(entity.getPosZ() - z + 0.5, 2));
     }
 }

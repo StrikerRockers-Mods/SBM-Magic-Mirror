@@ -9,35 +9,34 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
 
-version = '1.14.4-1.0.0'
+version = '1.15.2-1.0.1'
 group = 'magic-mirror'
 archivesBaseName = 'SBM-Magic-Mirror'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
-    mappings channel: 'snapshot', version: '20191012-1.14.3'
+    mappings channel: 'snapshot', version: '20200122-1.15.1'
+
     runs {
-        client = {
-            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+        client  {
             properties 'forge.logging.console.level': 'debug'
-            workingDirectory project.file('run').canonicalPath
+            workingDirectory project.file('run')
             source sourceSets.main
         }
-        server = {
-            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+        server {
             properties 'forge.logging.console.level': 'debug'
-            workingDirectory project.file('run').canonicalPath
+            workingDirectory project.file('run')
             source sourceSets.main
         }
     }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.14.4-28.1.39'
+    minecraft 'net.minecraftforge:forge:1.15.2-31.0.0'
 }
 
 jar {
