@@ -8,10 +8,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
+import net.minecraft.item.*;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -42,7 +39,7 @@ public class MirrorItem extends Item {
     public MirrorItem(MirrorSubType type) {
         super(new Properties().maxStackSize(1).group(ItemGroup.TOOLS));
         setRegistryName(MagicMirror.DOMAIN, "magicmirror_" + type.toString().toLowerCase());
-        addPropertyOverride(new ResourceLocation(MagicMirror.DOMAIN, "state"), (stack, world, entity) -> entity instanceof PlayerEntity ? getState((PlayerEntity) entity) : 0);
+        ItemModelsProperties.func_239418_a_(this, new ResourceLocation(MagicMirror.DOMAIN, "state"), (stack, world, entity) -> entity instanceof PlayerEntity ? getState((PlayerEntity) entity) : 0);
     }
 
     public float getState(PlayerEntity player) {
@@ -121,7 +118,7 @@ public class MirrorItem extends Item {
     @Override
     public void addInformation(ItemStack p_77624_1_, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag p_77624_4_) {
         if (worldIn != null) {
-            if (!worldIn.dimension.hasSkyLight()) {
+            if (!worldIn.func_230315_m_().hasSkyLight()) {
                 tooltip.add(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.error.nosky"));
             } else {
                 tooltip.add(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.desc" + (ConfigCost.USE_XP.get() ? ".xp" : "")));

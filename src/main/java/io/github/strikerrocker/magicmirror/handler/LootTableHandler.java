@@ -1,18 +1,14 @@
 package io.github.strikerrocker.magicmirror.handler;
 
 import io.github.strikerrocker.magicmirror.MagicMirror;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.LootEntry;
 import net.minecraftforge.fml.common.Mod;
-
-import java.util.HashMap;
 
 @Mod.EventBusSubscriber(modid = MagicMirror.DOMAIN)
 public class LootTableHandler {
     ///setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/simple_dungeon"}
     //TODO add configs for drop rates and what loot tables to support
-    private static final String VANILLA_LOOT_POOL_ID = "main";
-    private static HashMap<ResourceLocation, LootEntry[]> lootEntries = new HashMap();
+    //private static final String VANILLA_LOOT_POOL_ID = "main";
+    //private static HashMap<ResourceLocation, LootEntry[]> lootEntries = new HashMap();
 
     /*static {
         //Normal loot

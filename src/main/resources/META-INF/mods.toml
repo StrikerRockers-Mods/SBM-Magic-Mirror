@@ -1,5 +1,6 @@
 modLoader="javafml"
 loaderVersion="[30,)"
+license="MIT"
 issueTrackerURL="https://github.com/StrikerRockers-Mods/SBM-Magic-Mirror/issues "
 displayURL="https://www.curseforge.com/minecraft/mc-mods/sbm-magic-mirror/"
 authors="StrikerRocker,DarkCow"
@@ -20,6 +21,6 @@ description='''Mirror like object that is used to quickly get to the surface aft
 [[dependencies.sbmmagicmirror]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15,1.16)"
+    versionRange="[1.16,)"
     ordering="NONE"
     side="BOTH"

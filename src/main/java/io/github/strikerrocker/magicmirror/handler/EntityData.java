@@ -67,7 +67,7 @@ public class EntityData {
      * @return true if Y level is greater than world's horizon value
      */
     private boolean checkOnSurface() {
-        return playerBlockPos.getY() >= playerWorld.getDimension().getSeaLevel();
+        return playerBlockPos.getY() >= playerWorld.getSeaLevel();
     }
 
     /**
@@ -192,7 +192,7 @@ public class EntityData {
     }
 
     private boolean checkCanSeeSky() {
-        return playerWorld.dimension.hasSkyLight() && (playerWorld.canBlockSeeSky(playerBlockPos.up()) || doRayCheckSky());
+        return playerWorld.func_230315_m_().hasSkyLight() && (playerWorld.canBlockSeeSky(playerBlockPos.up()) || doRayCheckSky());
     }
 
     //Does a basic check to see if there is a solid block above us
