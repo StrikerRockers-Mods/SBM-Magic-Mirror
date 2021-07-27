@@ -42,7 +42,7 @@ public class EntityData {
     private int tick = 0;
 
     EntityData(Entity e) {
-        this(e.world, (int) e.getPosX(), (int) e.getPosY(), (int) e.getPosZ());
+        this(e.level, (int) e.getX(), (int) e.getY(), (int) e.getZ());
     }
 
     private EntityData(World world, int x, int y, int z) {
@@ -75,7 +75,7 @@ public class EntityData {
      */
     void update(PlayerEntity player, ItemStack stack) {
         //Ensure we only update once a tick, Patch to fix if user has several mirrors in inventory
-        if (!player.world.isRemote && (lastTickTime == 0 || (System.currentTimeMillis() - lastTickTime) >= 50) && player.getCapability(MagicMirror.CAPABILITY_MIRROR).isPresent()) {
+        if (!player.level.isClientSide && (lastTickTime == 0 || (System.currentTimeMillis() - lastTickTime) >= 50) && player.getCapability(MagicMirror.CAPABILITY_MIRROR).isPresent()) {
             tick();
             recordPosition(player);
             try {
@@ -84,7 +84,7 @@ public class EntityData {
                     if (ConfigUse.TELEPORT_BREAK_DISTANCE.get() > -1 && mirrorData.hasLocation()) {
                         if (mirrorData.getLocation().getDistance(player) >= ConfigUse.TELEPORT_BREAK_DISTANCE.get()) {
                             mirrorData.setLocation(null);
-                            player.sendStatusMessage(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.error.link.broken.distance"), true);
+                            player.displayClientMessage(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.error.link.broken.distance"), true);
                             //TODO play audio when cleared
                         }
                     }
@@ -103,7 +103,7 @@ public class EntityData {
                     player.getCapability(MagicMirror.CAPABILITY_MIRROR).filter(mirrorData -> mirrorData.hasLocation() && timeAboveGround >= ConfigUse.SURFACE_COOLDOWN.get())
                             .ifPresent(mirrorData -> mirrorData.setLocation(null));
                     if (timeAboveGround == ConfigUse.MIN_SURFACE_TIME.get()) {
-                        player.sendStatusMessage(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.charged"), true);
+                        player.displayClientMessage(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.charged"), true);
                         //TODO Randomize message
                         //TODO add command to enable/disable message
                         //TODO play audio when charged
@@ -123,7 +123,7 @@ public class EntityData {
                     timeWithoutSky++;
                     if (potentialTP != null && timeWithoutSky >= ConfigUse.TP_SET_DELAY.get()) {
                         player.getCapability(MagicMirror.CAPABILITY_MIRROR).ifPresent(mirrorData -> mirrorData.setLocation(potentialTP));
-                        player.sendStatusMessage(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.location.set", potentialTP.x, potentialTP.y, potentialTP.z),
+                        player.displayClientMessage(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.location.set", potentialTP.x, potentialTP.y, potentialTP.z),
                                 true);
                         reset();
                     }
@@ -186,26 +186,26 @@ public class EntityData {
     private void recordPosition(PlayerEntity player) {
         //Update position
         playerBlockPos = new BlockPos(
-                (int) Math.floor(player.getPosX()),
-                (int) Math.floor(player.getPosY()),
-                (int) Math.floor(player.getPosZ()));
+                (int) Math.floor(player.getX()),
+                (int) Math.floor(player.getY()),
+                (int) Math.floor(player.getZ()));
     }
 
     private boolean checkCanSeeSky() {
-        return playerWorld.func_230315_m_().hasSkyLight() && (playerWorld.canBlockSeeSky(playerBlockPos.up()) || doRayCheckSky());
+        return playerWorld.dimensionType().hasSkyLight() && (playerWorld.canSeeSkyFromBelowWater(playerBlockPos.above()) || doRayCheckSky());
     }
 
     //Does a basic check to see if there is a solid block above us
     private boolean doRayCheckSky() {
-        BlockPos blockPos = playerBlockPos.up();
+        BlockPos blockPos = playerBlockPos.above();
         do {
             BlockState state = playerWorld.getBlockState(blockPos);
-            if (state.getMaterial() != Material.AIR && (state.isOpaqueCube(playerWorld, blockPos))) {
+            if (state.getMaterial() != Material.AIR && (state.isSolidRender(playerWorld, blockPos))) {
                 return false;
             }
 
             //Increase position
-            blockPos = blockPos.up();
+            blockPos = blockPos.above();
         }
         while (blockPos.getY() < 256);
         return true;

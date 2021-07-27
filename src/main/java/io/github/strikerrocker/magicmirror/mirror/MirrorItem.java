@@ -37,9 +37,9 @@ public class MirrorItem extends Item {
     public MirrorState currentMirrorState = MirrorState.DEFAULT;
 
     public MirrorItem(MirrorSubType type) {
-        super(new Properties().maxStackSize(1).group(ItemGroup.TOOLS));
+        super(new Properties().stacksTo(1).tab(ItemGroup.TAB_TOOLS));
         setRegistryName(MagicMirror.DOMAIN, "magicmirror_" + type.toString().toLowerCase());
-        ItemModelsProperties.func_239418_a_(this, new ResourceLocation(MagicMirror.DOMAIN, "state"), (stack, world, entity) -> entity instanceof PlayerEntity ? getState((PlayerEntity) entity) : 0);
+        ItemModelsProperties.register(this, new ResourceLocation(MagicMirror.DOMAIN, "state"), (stack, world, entity) -> entity instanceof PlayerEntity ? getState((PlayerEntity) entity) : 0);
     }
 
     public float getState(PlayerEntity player) {
@@ -75,28 +75,28 @@ public class MirrorItem extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (!worldIn.isRemote && playerIn.getCapability(CAPABILITY_MIRROR).isPresent()) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if (!worldIn.isClientSide && playerIn.getCapability(CAPABILITY_MIRROR).isPresent()) {
             if (canTeleport(playerIn)) {
                 //TODO play charge start sound effect
-                playerIn.setActiveHand(handIn);
-                return new ActionResult<>(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
+                playerIn.startUsingItem(handIn);
+                return new ActionResult<>(ActionResultType.SUCCESS, playerIn.getItemInHand(handIn));
             } else if (!playerIn.getCapability(CAPABILITY_MIRROR).orElse(null).hasLocation()) {
-                playerIn.sendStatusMessage(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
-                return new ActionResult<>(ActionResultType.FAIL, playerIn.getHeldItem(handIn));
-            } else if (playerIn.getCapability(CAPABILITY_MIRROR).orElse(null).getLocation().getTeleportCost(playerIn) > playerIn.experienceTotal) {
+                playerIn.displayClientMessage(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
+                return new ActionResult<>(ActionResultType.FAIL, playerIn.getItemInHand(handIn));
+            } else if (playerIn.getCapability(CAPABILITY_MIRROR).orElse(null).getLocation().getTeleportCost(playerIn) > playerIn.totalExperience) {
                 int needed_xp = (int) Math.ceil(playerIn.getCapability(CAPABILITY_MIRROR).orElse(null).getLocation().getTeleportCost(playerIn));
-                int missing_xp = needed_xp - playerIn.experienceTotal;
+                int missing_xp = needed_xp - playerIn.totalExperience;
 
-                playerIn.sendStatusMessage(new TranslationTextComponent(
+                playerIn.displayClientMessage(new TranslationTextComponent(
                                 "item.sbmmagicmirror:magicmirror.error.xp",
                                 missing_xp,
                                 needed_xp),
                         true);
-                return new ActionResult<>(ActionResultType.FAIL, playerIn.getHeldItem(handIn));
+                return new ActionResult<>(ActionResultType.FAIL, playerIn.getItemInHand(handIn));
             }
         }
-        return new ActionResult<>(ActionResultType.FAIL, playerIn.getHeldItem(handIn));
+        return new ActionResult<>(ActionResultType.FAIL, playerIn.getItemInHand(handIn));
     }
 
     /**
@@ -104,7 +104,7 @@ public class MirrorItem extends Item {
      */
     private boolean canTeleport(PlayerEntity player) {
         //Ignore cost if XP use is disabled or player is in creative mode
-        if (!ConfigCost.USE_XP.get() || player.abilities.isCreativeMode) {
+        if (!ConfigCost.USE_XP.get() || player.abilities.instabuild) {
             return true;
         }
         if (!player.getCapability(CAPABILITY_MIRROR).orElse(null).hasLocation())
@@ -112,13 +112,13 @@ public class MirrorItem extends Item {
 
         //If normal player and config, check for XP cost
         float xp = player.getCapability(CAPABILITY_MIRROR).orElse(null).getLocation().getTeleportCost(player);
-        return player.experienceTotal >= xp;
+        return player.totalExperience >= xp;
     }
 
     @Override
-    public void addInformation(ItemStack p_77624_1_, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag p_77624_4_) {
+    public void appendHoverText(ItemStack p_77624_1_, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag p_77624_4_) {
         if (worldIn != null) {
-            if (!worldIn.func_230315_m_().hasSkyLight()) {
+            if (!worldIn.dimensionType().hasSkyLight()) {
                 tooltip.add(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.error.nosky"));
             } else {
                 tooltip.add(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.desc" + (ConfigCost.USE_XP.get() ? ".xp" : "")));
@@ -131,7 +131,7 @@ public class MirrorItem extends Item {
     }
 
     @Override
-    public boolean hasEffect(ItemStack stack) {
+    public boolean isFoil(ItemStack stack) {
         return stack.isEnchanted();
     }
 

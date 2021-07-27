@@ -50,9 +50,9 @@ public class MirrorHandler {
     public static EntityData get(PlayerEntity player) {
         final UUID id = player.getGameProfile().getId();
         if (!userData.containsKey(id)) {
-            userData.put(player.getUniqueID(), new EntityData(player));
+            userData.put(player.getUUID(), new EntityData(player));
         }
-        return userData.get(player.getUniqueID());
+        return userData.get(player.getUUID());
     }
 
     /**

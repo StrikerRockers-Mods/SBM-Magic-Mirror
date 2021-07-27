@@ -28,10 +28,7 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = MagicMirror.DOMAIN, bus = Mod.EventBusSubscriber.Bus.MOD)
 @Mod(value = MagicMirror.DOMAIN)
 public class MagicMirror {
-    //TODO make the mirror glow when it can be used
-    //TODO make it have a visual change when it has a stored location
     //TODO show some kind of progress bar for XP needed
-    //TODO Event to fire(Marks position, etc)
 
     /**
      * Are we running in developer mode, used to enabled additional debug and tools

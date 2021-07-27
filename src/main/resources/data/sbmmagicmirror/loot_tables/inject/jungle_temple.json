@@ -1,0 +1,47 @@
+{
+  "__comment": "This table is injected as its own pool into minecraft:chests/jungle_temple",
+  "pools": [
+    {
+      "name": "main",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "sbmmagicmirror:magicmirror_silver_dirty",
+          "weight": 15,
+          "quality": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "sbmmagicmirror:magicmirror_silver",
+          "weight": 12,
+          "quality": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "sbmmagicmirror:magicmirror_gold",
+          "weight": 3,
+          "quality": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "sbmmagicmirror:magicmirror_gold_dirty",
+          "weight": 8,
+          "quality": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "sbmmagicmirror:magicmirror_diamond",
+          "weight": 1,
+          "quality": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "sbmmagicmirror:magicmirror_diamond_dirty",
+          "weight": 1,
+          "quality": 1
+        }
+      ]
+    }
+  ]
+}

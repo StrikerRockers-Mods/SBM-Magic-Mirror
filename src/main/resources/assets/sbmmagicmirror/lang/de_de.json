@@ -1,0 +1,18 @@
+{
+  "item.sbmmagicmirror.magicmirror_gold_dirty": "Magischer Spiegel",
+  "item.sbmmagicmirror.magicmirror_diamond_dirty": "Magischer Spiegel",
+  "item.sbmmagicmirror.magicmirror_silver_dirty": "Magischer Spiegel",
+  "item.sbmmagicmirror.magicmirror_gold": "Magischer Spiegel",
+  "item.sbmmagicmirror.magicmirror_diamond": "Magischer Spiegel",
+  "item.sbmmagicmirror.magicmirror_silver": "Magischer Spiegel",
+  "item.sbmmagicmirror:magicmirror.desc.xp": "Erlaubt, dich zu deiner letzten bekannten Position an der Oberfläche zu teleportieren, auf Kosten von XP",
+  "item.sbmmagicmirror:magicmirror.desc": "Erlaubt, dich zu deiner letzten bekannten Position an der Oberfläche zu teleportieren",
+  "item.sbmmagicmirror:magicmirror.location": "Deine Position ist %dx %dy %dz und wird dich zum Teleportieren %d XP kosten",
+  "item.sbmmagicmirror:magicmirror.location.set": "Spiegelposition zu %dx %dy %dz gesetzt",
+  "item.sbmmagicmirror:magicmirror.charged": "Spiegel durch die Liebe des Himmels aufgeladen",
+  "item.sbmmagicmirror:magicmirror.teleported": "*Puff*",
+  "item.sbmmagicmirror:magicmirror.error.nolocation": "Keine Position gespeichert.",
+  "item.sbmmagicmirror:magicmirror.error.xp": "Dir fehlen %d XP von %d insgesamt.",
+  "item.sbmmagicmirror:magicmirror.error.nosky": "Der Spiegel funktioniert nur in einer Dimension mit Himmel",
+  "item.sbmmagicmirror:magicmirror.error.link.broken.distance": "Verbindung des Spiegels abgebrochen, du bist zu weit weg gelaufen"
+}
