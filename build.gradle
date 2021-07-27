@@ -15,7 +15,7 @@ apply plugin: 'maven-publish'
 repositories {
 }
 
-version = '1.16.5-1.0.4'
+version = '1.16.5-1.0.5'
 group = 'magic-mirror'
 archivesBaseName = 'SBM-Magic-Mirror'
 
