@@ -1,10 +1,10 @@
 package io.github.strikerrocker.magicmirror.handler;
 
 import io.github.strikerrocker.magicmirror.config.ConfigCost;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Stores the location to teleport the user to
@@ -18,7 +18,7 @@ public class TeleportPos {
 
 
     TeleportPos(Entity e) {
-        this((int) e.getX(), (int) e.getY(), (int) e.getZ(), e.yRot, e.xRot);
+        this((int) e.getX(), (int) e.getY(), (int) e.getZ(), e.getYRot(), e.getXRot());
     }
 
     public TeleportPos(int x, int y, int z, float yaw, float pitch) {
@@ -33,22 +33,17 @@ public class TeleportPos {
     /**
      * Triggers the teleport for the user
      */
-    void teleport(PlayerEntity player) {
-        //TODO display particle effects as last location, and new location
-        //TODO show trail point in the direction the user teleported
-        //TODO use purple smoke
-        //TODO play sound effect at both locations
-        //TODO use different sounds for leave and enter
-        if (player instanceof ServerPlayerEntity) {
-            player.displayClientMessage(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.teleported"), true);
-            ((ServerPlayerEntity) player).connection.teleport(x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
+    void teleport(Player player) {
+        if (player instanceof ServerPlayer) {
+            player.displayClientMessage(new TranslatableComponent("item.sbmmagicmirror:magicmirror.teleported"), true);
+            ((ServerPlayer) player).connection.teleport(x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
         }
     }
 
     /**
      * Cost in XP to teleport to the location
      */
-    public float getTeleportCost(PlayerEntity player) {
+    public float getTeleportCost(Player player) {
         if (ConfigCost.FLAT_RATE.get()) {
             return ConfigCost.XP_COST.get();
         }
@@ -58,14 +53,7 @@ public class TeleportPos {
     /**
      * Distance to the location from the entity
      */
-    private int getDistanceInt(Entity entity) {
+    public int getDistanceInt(Entity entity) {
         return (int) Math.sqrt(Math.pow(entity.getX() - x + 0.5, 2) + Math.pow(entity.getY() - y + 0.5, 2) + Math.pow(entity.getZ() - z + 0.5, 2));
-    }
-
-    /**
-     * Distance to the location from the entity
-     */
-    double getDistance(Entity entity) {
-        return Math.sqrt(Math.pow(entity.getX() - x + 0.5, 2) + Math.pow(entity.getY() - y + 0.5, 2) + Math.pow(entity.getZ() - z + 0.5, 2));
     }
 }

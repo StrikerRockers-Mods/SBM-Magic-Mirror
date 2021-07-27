@@ -2,6 +2,8 @@ package io.github.strikerrocker.magicmirror.capability;
 
 import io.github.strikerrocker.magicmirror.handler.TeleportPos;
 
+import javax.annotation.Nullable;
+
 public class MirrorData implements IMirrorData {
     private TeleportPos teleportPos;
 
@@ -14,6 +16,7 @@ public class MirrorData implements IMirrorData {
     }
 
     @Override
+    @Nullable
     public TeleportPos getLocation() {
         return teleportPos;
     }

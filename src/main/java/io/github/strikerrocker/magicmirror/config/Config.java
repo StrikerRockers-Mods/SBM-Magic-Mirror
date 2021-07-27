@@ -22,7 +22,6 @@ public class Config {
 
 
     public static void loadConfig(ForgeConfigSpec spec, Path path) {
-
         final CommentedFileConfig configData = CommentedFileConfig.builder(path)
                 .sync()
                 .autosave()

@@ -4,19 +4,19 @@ import io.github.strikerrocker.magicmirror.MagicMirror;
 import io.github.strikerrocker.magicmirror.config.ConfigCost;
 import io.github.strikerrocker.magicmirror.config.ConfigUse;
 import io.github.strikerrocker.magicmirror.handler.MirrorHandler;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -37,12 +37,12 @@ public class MirrorItem extends Item {
     public MirrorState currentMirrorState = MirrorState.DEFAULT;
 
     public MirrorItem(MirrorSubType type) {
-        super(new Properties().stacksTo(1).tab(ItemGroup.TAB_TOOLS));
+        super(new Properties().stacksTo(1).tab(CreativeModeTab.TAB_TOOLS));
         setRegistryName(MagicMirror.DOMAIN, "magicmirror_" + type.toString().toLowerCase());
-        ItemModelsProperties.register(this, new ResourceLocation(MagicMirror.DOMAIN, "state"), (stack, world, entity) -> entity instanceof PlayerEntity ? getState((PlayerEntity) entity) : 0);
+        ItemProperties.register(this, new ResourceLocation(MagicMirror.DOMAIN, "state"), (stack, world, entity, no) -> entity instanceof Player ? getState((Player) entity) : 0);
     }
 
-    public float getState(PlayerEntity player) {
+    public float getState(Player player) {
         boolean isCharged = MirrorHandler.get(player).timeAboveGround >= ConfigUse.MIN_SURFACE_TIME.get();
         if (!player.getCapability(CAPABILITY_MIRROR).isPresent()) {
             return 0;
@@ -52,12 +52,9 @@ public class MirrorItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int p_77663_4_, boolean p_77663_5_) {
-        //TODO play sound effect when mirror is ready to use (has location, user has XP)
-        //TODO play sound effect when mirror has charged(Is able to store a location)
-        //TODO play sound effect when mirror loses charge or location (User leaves teleport area)
-        if (entity instanceof PlayerEntity) {
-            MirrorHandler.updateUserData((PlayerEntity) entity, stack);
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int p_77663_4_, boolean p_77663_5_) {
+        if (entity instanceof Player) {
+            MirrorHandler.updateUserData((Player) entity, stack);
         }
     }
 
@@ -68,43 +65,41 @@ public class MirrorItem extends Item {
 
     @Override
     public void onUsingTick(ItemStack stack, LivingEntity player, int count) {
-        //TODO play charging sound effect
-        if (getUseDuration(stack) - count >= 1 && player instanceof PlayerEntity) {
-            MirrorHandler.teleport((PlayerEntity) player);
+        if (getUseDuration(stack) - count >= 1 && player instanceof Player) {
+            MirrorHandler.teleport((Player) player);
         }
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (!worldIn.isClientSide && playerIn.getCapability(CAPABILITY_MIRROR).isPresent()) {
             if (canTeleport(playerIn)) {
-                //TODO play charge start sound effect
                 playerIn.startUsingItem(handIn);
-                return new ActionResult<>(ActionResultType.SUCCESS, playerIn.getItemInHand(handIn));
+                return new InteractionResultHolder<>(InteractionResult.SUCCESS, playerIn.getItemInHand(handIn));
             } else if (!playerIn.getCapability(CAPABILITY_MIRROR).orElse(null).hasLocation()) {
-                playerIn.displayClientMessage(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
-                return new ActionResult<>(ActionResultType.FAIL, playerIn.getItemInHand(handIn));
+                playerIn.displayClientMessage(new TranslatableComponent("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
+                return new InteractionResultHolder<>(InteractionResult.FAIL, playerIn.getItemInHand(handIn));
             } else if (playerIn.getCapability(CAPABILITY_MIRROR).orElse(null).getLocation().getTeleportCost(playerIn) > playerIn.totalExperience) {
                 int needed_xp = (int) Math.ceil(playerIn.getCapability(CAPABILITY_MIRROR).orElse(null).getLocation().getTeleportCost(playerIn));
                 int missing_xp = needed_xp - playerIn.totalExperience;
 
-                playerIn.displayClientMessage(new TranslationTextComponent(
+                playerIn.displayClientMessage(new TranslatableComponent(
                                 "item.sbmmagicmirror:magicmirror.error.xp",
                                 missing_xp,
                                 needed_xp),
                         true);
-                return new ActionResult<>(ActionResultType.FAIL, playerIn.getItemInHand(handIn));
+                return new InteractionResultHolder<>(InteractionResult.FAIL, playerIn.getItemInHand(handIn));
             }
         }
-        return new ActionResult<>(ActionResultType.FAIL, playerIn.getItemInHand(handIn));
+        return new InteractionResultHolder<>(InteractionResult.FAIL, playerIn.getItemInHand(handIn));
     }
 
     /**
      * Can the user teleport
      */
-    private boolean canTeleport(PlayerEntity player) {
+    private boolean canTeleport(Player player) {
         //Ignore cost if XP use is disabled or player is in creative mode
-        if (!ConfigCost.USE_XP.get() || player.abilities.instabuild) {
+        if (!ConfigCost.USE_XP.get() || player.isCreative()) {
             return true;
         }
         if (!player.getCapability(CAPABILITY_MIRROR).orElse(null).hasLocation())
@@ -116,16 +111,16 @@ public class MirrorItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack p_77624_1_, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag p_77624_4_) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag tooltipFlag) {
         if (worldIn != null) {
             if (!worldIn.dimensionType().hasSkyLight()) {
-                tooltip.add(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.error.nosky"));
+                tooltip.add(new TranslatableComponent("item.sbmmagicmirror:magicmirror.error.nosky"));
             } else {
-                tooltip.add(new TranslationTextComponent("item.sbmmagicmirror:magicmirror.desc" + (ConfigCost.USE_XP.get() ? ".xp" : "")));
+                tooltip.add(new TranslatableComponent("item.sbmmagicmirror:magicmirror.desc" + (ConfigCost.USE_XP.get() ? ".xp" : "")));
             }
-            if (MagicMirror.runningAsDev) {
-                tooltip.add(new StringTextComponent(currentXPCostToTeleport + ""));
-                tooltip.add(new StringTextComponent((currentMirrorState + "")));
+            if (tooltipFlag.isAdvanced()) {
+                tooltip.add(new TextComponent(currentXPCostToTeleport + ""));
+                tooltip.add(new TextComponent((currentMirrorState + "")));
             }
         }
     }
