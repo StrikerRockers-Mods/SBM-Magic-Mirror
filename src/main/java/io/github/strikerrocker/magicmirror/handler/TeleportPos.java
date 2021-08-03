@@ -16,7 +16,6 @@ public class TeleportPos {
     public final float yaw;
     public final float pitch;
 
-
     TeleportPos(Entity e) {
         this((int) e.getX(), (int) e.getY(), (int) e.getZ(), e.getYRot(), e.getXRot());
     }

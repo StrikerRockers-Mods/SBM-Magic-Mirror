@@ -7,6 +7,8 @@ import io.github.strikerrocker.magicmirror.mirror.MirrorItem;
 import io.github.strikerrocker.magicmirror.mirror.MirrorState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -61,9 +63,9 @@ public class EntityData {
      * Called to update the position data for the entity
      */
     void update(Player player, ItemStack stack) {
-        //Ensure we only update once a tick, Patch to fix if user has several mirrors in inventory
         Level level = player.level;
         if (player.getCapability(MagicMirror.CAPABILITY_MIRROR).isPresent()) {
+            //Ensure we only update once a tick, Patch to fix if user has several mirrors in inventory
             if (!level.isClientSide() && (lastTickTime == 0 || (System.currentTimeMillis() - lastTickTime) >= 50)) {
                 tick();
                 playerBlockPos = player.blockPosition();
@@ -73,6 +75,7 @@ public class EntityData {
                         if (ConfigUse.TELEPORT_BREAK_DISTANCE.get() > -1 && mirrorData.hasLocation()) {
                             if (mirrorData.getLocation().getDistanceInt(player) >= ConfigUse.TELEPORT_BREAK_DISTANCE.get()) {
                                 mirrorData.setLocation(null);
+                                level.playSound(null, player.blockPosition(), SoundEvents.ENDER_EYE_DEATH, SoundSource.PLAYERS, 1F, 1F);
                                 player.displayClientMessage(new TranslatableComponent("item.sbmmagicmirror:magicmirror.error.link.broken.distance"), true);
                             }
                         }
@@ -92,6 +95,7 @@ public class EntityData {
                                 .ifPresent(mirrorData -> mirrorData.setLocation(null));
                         if (timeAboveGround == ConfigUse.MIN_SURFACE_TIME.get()) {
                             player.displayClientMessage(new TranslatableComponent("item.sbmmagicmirror:magicmirror.charged"), true);
+                            level.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1F, 2F);
                         }
                     }
                     //if min time -> can't see sky -> no tp loc -> set loc
@@ -110,6 +114,7 @@ public class EntityData {
                             player.getCapability(MagicMirror.CAPABILITY_MIRROR).ifPresent(mirrorData -> mirrorData.setLocation(potentialTP));
                             player.displayClientMessage(new TranslatableComponent("item.sbmmagicmirror:magicmirror.location.set", potentialTP.x, potentialTP.y, potentialTP.z),
                                     true);
+                            level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1F, 1F);
                             reset();
                         }
                         if (timeOnSurfaceCooldown++ >= ConfigUse.SURFACE_COOLDOWN.get()) {
