@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootTableReference;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -21,21 +22,9 @@ public class LootTableHandler {
         if (name.startsWith(prefix) && ConfigLoot.enableAsDungeonLoot.get()) {
             String file = name.substring(name.indexOf(prefix) + prefix.length());
             switch (file) {
-                case "abandoned_mineshaft":
-                case "desert_pyramid":
-                case "simple_dungeon":
-                case "stronghold_library":
-                case "village/village_toolsmith":
-                case "end_city_treasure":
-                case "nether_bridge":
-                case "jungle_temple":
-                case "woodland_mansion":
-                case "stronghold_corridor":
-                case "stronghold_crossing":
-                    evt.getTable().addPool(getInjectPool(file));
-                    break;
-                default:
-                    break;
+                case "abandoned_mineshaft", "desert_pyramid", "simple_dungeon", "stronghold_library", "village/village_toolsmith", "end_city_treasure", "nether_bridge", "jungle_temple", "woodland_mansion", "stronghold_corridor", "stronghold_crossing" -> evt.getTable().addPool(getInjectPool(file));
+                default -> {
+                }
             }
         }
     }
@@ -43,7 +32,7 @@ public class LootTableHandler {
     public static LootPool getInjectPool(String entryName) {
         return LootPool.lootPool()
                 .add(getInjectEntry(entryName))
-                .bonusRolls(0, 1)
+                .setBonusRolls(UniformGenerator.between(0, 1))
                 .name("inject")
                 .build();
     }

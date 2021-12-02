@@ -6,12 +6,12 @@ import io.github.strikerrocker.magicmirror.mirror.MirrorItem;
 import io.github.strikerrocker.magicmirror.mirror.MirrorSubType;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,16 +28,16 @@ public class MagicMirror {
     /**
      * Mirror item used to activate and tick mirror handler
      */
-    @CapabilityInject(IMirrorData.class)
-    public static Capability<IMirrorData> CAPABILITY_MIRROR = null;
+    public static Capability<IMirrorData> CAPABILITY_MIRROR = CapabilityManager.get(new CapabilityToken<>() {
+    });
 
     public MagicMirror() {
         Config.loadConfig(Config.SERVER_CONFIG, FMLPaths.CONFIGDIR.get().resolve("magic_mirror.toml"));
     }
 
     @SubscribeEvent
-    public static void commonSetup(FMLCommonSetupEvent event) {
-        CapabilityManager.INSTANCE.register(IMirrorData.class);
+    public static void capabilityRegisterEvent(RegisterCapabilitiesEvent event) {
+        event.register(IMirrorData.class);
     }
 
     @SubscribeEvent

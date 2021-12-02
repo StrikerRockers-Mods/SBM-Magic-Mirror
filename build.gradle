@@ -10,19 +10,18 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
 
 repositories {
 }
 
-version = '1.17.1-1.0.6'
+version = project.mod_version
 group = 'magic-mirror'
-archivesBaseName = 'SBM-Magic-Mirror'
+archivesBaseName = 'SBM-Magic-Mirror-'+project.minecraft_version
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.17.1'
+    mappings channel: 'official', version: project.minecraft_version
     runs {
         client {
             properties 'forge.logging.console.level': 'debug'
@@ -38,7 +37,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.17.1-37.0.22'
+    minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 }
 
 
