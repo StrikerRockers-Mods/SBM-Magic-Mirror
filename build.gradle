@@ -15,8 +15,7 @@ repositories {
 }
 
 version = project.mod_version
-group = 'magic-mirror'
-archivesBaseName = 'SBM-Magic-Mirror-'+project.minecraft_version
+archivesBaseName = project.mod_name + '-' + project.minecraft_version
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -54,4 +53,29 @@ jar {
             "Implementation-Vendor"   : "StrikerRocker",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
     ])
+}
+
+task setupGithubActions() {
+    doLast {
+        exec {
+            commandLine "echo", "##[set-output name=version;]${project.mod_version}"
+        }
+        exec {
+            commandLine "echo", "##[set-output name=mod_name;]${project.mod_name}"
+        }
+        exec {
+            commandLine "echo", "##[set-output name=minecraft_version;]${project.minecraft_version}"
+        }
+        exec {
+            commandLine "echo", "##[set-output name=curse_project_id;]${project.curse_project_id}"
+        }
+        exec {
+            commandLine "echo", "##[set-output name=curse_versions;]${project.curse_versions}"
+        }
+        if (rootProject.hasProperty('curse_relations')) {
+            exec {
+                commandLine "echo", "##[set-output name=curse_relations;]${project.curse_relations_fabric}"
+            }
+        }
+    }
 }
