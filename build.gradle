@@ -23,12 +23,10 @@ minecraft {
     mappings channel: 'official', version: project.minecraft_version
     runs {
         client {
-            properties 'forge.logging.console.level': 'debug'
             workingDirectory project.file('run')
             source sourceSets.main
         }
         server {
-            properties 'forge.logging.console.level': 'debug'
             workingDirectory project.file('run')
             source sourceSets.main
         }
@@ -74,7 +72,7 @@ task setupGithubActions() {
         }
         if (rootProject.hasProperty('curse_relations')) {
             exec {
-                commandLine "echo", "##[set-output name=curse_relations;]${project.curse_relations_fabric}"
+                commandLine "echo", "##[set-output name=curse_relations;]${project.curse_relations}"
             }
         }
     }

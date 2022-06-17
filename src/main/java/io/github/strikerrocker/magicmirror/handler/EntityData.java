@@ -6,7 +6,7 @@ import io.github.strikerrocker.magicmirror.config.ConfigUse;
 import io.github.strikerrocker.magicmirror.mirror.MirrorItem;
 import io.github.strikerrocker.magicmirror.mirror.MirrorState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -76,7 +76,7 @@ public class EntityData {
                             if (mirrorData.getLocation().getDistanceInt(player) >= ConfigUse.TELEPORT_BREAK_DISTANCE.get()) {
                                 mirrorData.setLocation(null);
                                 level.playSound(null, player.blockPosition(), SoundEvents.ENDER_EYE_DEATH, SoundSource.PLAYERS, 1F, 1F);
-                                player.displayClientMessage(new TranslatableComponent("item.sbmmagicmirror:magicmirror.error.link.broken.distance"), true);
+                                player.displayClientMessage(Component.translatable("item.sbmmagicmirror:magicmirror.error.link.broken.distance"), true);
                             }
                         }
                     });
@@ -94,7 +94,7 @@ public class EntityData {
                         player.getCapability(MagicMirror.CAPABILITY_MIRROR).filter(mirrorData -> mirrorData.hasLocation() && timeAboveGround >= ConfigUse.SURFACE_COOLDOWN.get())
                                 .ifPresent(mirrorData -> mirrorData.setLocation(null));
                         if (timeAboveGround == ConfigUse.MIN_SURFACE_TIME.get()) {
-                            player.displayClientMessage(new TranslatableComponent("item.sbmmagicmirror:magicmirror.charged"), true);
+                            player.displayClientMessage(Component.translatable("item.sbmmagicmirror:magicmirror.charged"), true);
                             level.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1F, 2F);
                         }
                     }
@@ -112,7 +112,7 @@ public class EntityData {
                         timeWithoutSky++;
                         if (potentialTP != null && timeWithoutSky >= ConfigUse.TP_SET_DELAY.get()) {
                             player.getCapability(MagicMirror.CAPABILITY_MIRROR).ifPresent(mirrorData -> mirrorData.setLocation(potentialTP));
-                            player.displayClientMessage(new TranslatableComponent("item.sbmmagicmirror:magicmirror.location.set", potentialTP.x, potentialTP.y, potentialTP.z),
+                            player.displayClientMessage(Component.translatable("item.sbmmagicmirror:magicmirror.location.set", potentialTP.x, potentialTP.y, potentialTP.z),
                                     true);
                             level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1F, 1F);
                             reset();
@@ -133,8 +133,10 @@ public class EntityData {
 
                     if (stack.getItem() instanceof MirrorItem mirror) {
                         mirror.currentMirrorState = MirrorState.get((byte) mirror.getState(player));
-                        IMirrorData mirrorData = player.getCapability(MagicMirror.CAPABILITY_MIRROR).orElse(null);
-                        mirror.currentXPCostToTeleport = mirrorData.hasLocation() ? mirrorData.getLocation().getTeleportCost(player) : 0;
+                        player.getCapability(MagicMirror.CAPABILITY_MIRROR).ifPresent(iMirrorData -> {
+                            mirror.currentXPCostToTeleport = iMirrorData.hasLocation() ? iMirrorData.getLocation().getTeleportCost(player) : 0;
+                        });
+
                     }
 
                 } catch (Exception e) {

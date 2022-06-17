@@ -7,6 +7,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +17,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.HashMap;
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -59,7 +59,7 @@ public class MirrorHandler {
                 player.level.playSound(null, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1F, 2F);
                 mirrorData.getLocation().teleport(player);
                 TeleportPos teleportPos = mirrorData.getLocation();
-                Random random = player.getRandom();
+                RandomSource random = player.getRandom();
                 player.level.playSound(null, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1F, 2F);
                 if (player.level.isClientSide()) {
                     player.level.addParticle(ParticleTypes.PORTAL, teleportPos.x, teleportPos.y, teleportPos.z, (random.nextDouble() - 0.5D) * 2.0D, (random.nextDouble() - 0.5D) * 2.0D, (random.nextDouble() - 0.5D) * 2.0D);

@@ -6,8 +6,6 @@ import io.github.strikerrocker.magicmirror.config.ConfigUse;
 import io.github.strikerrocker.magicmirror.handler.MirrorHandler;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -38,7 +36,6 @@ public class MirrorItem extends Item {
 
     public MirrorItem(MirrorSubType type) {
         super(new Properties().stacksTo(1).tab(CreativeModeTab.TAB_TOOLS));
-        setRegistryName(MagicMirror.DOMAIN, "magicmirror_" + type.toString().toLowerCase());
         ItemProperties.register(this, new ResourceLocation(MagicMirror.DOMAIN, "state"), (stack, world, entity, no) -> entity instanceof Player ? getState((Player) entity) : 0);
     }
 
@@ -77,13 +74,13 @@ public class MirrorItem extends Item {
                 playerIn.startUsingItem(handIn);
                 return new InteractionResultHolder<>(InteractionResult.SUCCESS, playerIn.getItemInHand(handIn));
             } else if (!playerIn.getCapability(CAPABILITY_MIRROR).orElse(null).hasLocation()) {
-                playerIn.displayClientMessage(new TranslatableComponent("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
+                playerIn.displayClientMessage(Component.translatable("item.sbmmagicmirror:magicmirror.error.nolocation"), true);
                 return new InteractionResultHolder<>(InteractionResult.FAIL, playerIn.getItemInHand(handIn));
             } else if (playerIn.getCapability(CAPABILITY_MIRROR).orElse(null).getLocation().getTeleportCost(playerIn) > playerIn.totalExperience) {
                 int needed_xp = (int) Math.ceil(playerIn.getCapability(CAPABILITY_MIRROR).orElse(null).getLocation().getTeleportCost(playerIn));
                 int missing_xp = needed_xp - playerIn.totalExperience;
 
-                playerIn.displayClientMessage(new TranslatableComponent(
+                playerIn.displayClientMessage(Component.translatable(
                                 "item.sbmmagicmirror:magicmirror.error.xp",
                                 missing_xp,
                                 needed_xp),
@@ -114,13 +111,13 @@ public class MirrorItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag tooltipFlag) {
         if (worldIn != null) {
             if (!worldIn.dimensionType().hasSkyLight()) {
-                tooltip.add(new TranslatableComponent("item.sbmmagicmirror:magicmirror.error.nosky"));
+                tooltip.add(Component.translatable("item.sbmmagicmirror:magicmirror.error.nosky"));
             } else {
-                tooltip.add(new TranslatableComponent("item.sbmmagicmirror:magicmirror.desc" + (ConfigCost.USE_XP.get() ? ".xp" : "")));
+                tooltip.add(Component.translatable("item.sbmmagicmirror:magicmirror.desc" + (ConfigCost.USE_XP.get() ? ".xp" : "")));
             }
             if (tooltipFlag.isAdvanced()) {
-                tooltip.add(new TextComponent(currentXPCostToTeleport + ""));
-                tooltip.add(new TextComponent((currentMirrorState + "")));
+                tooltip.add(Component.literal(currentXPCostToTeleport + ""));
+                tooltip.add(Component.literal((currentMirrorState + "")));
             }
         }
     }

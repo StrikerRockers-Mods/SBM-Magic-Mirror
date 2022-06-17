@@ -1,7 +1,7 @@
 package io.github.strikerrocker.magicmirror.mirror;
 
 /**
- * Enum of sub types
+ * Enum of subtypes
  */
 public enum MirrorSubType {
     SILVER,

@@ -1,7 +1,7 @@
 package io.github.strikerrocker.magicmirror.handler;
 
 import io.github.strikerrocker.magicmirror.config.ConfigCost;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -34,7 +34,7 @@ public class TeleportPos {
      */
     void teleport(Player player) {
         if (player instanceof ServerPlayer) {
-            player.displayClientMessage(new TranslatableComponent("item.sbmmagicmirror:magicmirror.teleported"), true);
+            player.displayClientMessage(Component.translatable("item.sbmmagicmirror:magicmirror.teleported"), true);
             ((ServerPlayer) player).connection.teleport(x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
         }
     }
