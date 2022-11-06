@@ -9,11 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - { uses: actions/checkout@v2, with: { fetch-depth: 0 } }
-      - {
-        name: "Set up JDK 17",
-        uses: actions/setup-java@v2,
-        with: { distribution: "temurin", java-version: "17" },
-      }
+      - name: "Set up JDK 17"
+        uses: actions/setup-java@v2
+        with: { distribution: "temurin", java-version: "17" }
       - uses: burrunan/gradle-cache-action@v1
         name: Build with Gradle
         id: build
@@ -28,17 +26,17 @@ jobs:
           gzip: false
           name: "${{ steps.build.outputs.minecraft_version }}-${{ steps.build.outputs.version }}"
           token: "${{ secrets.GITHUB_TOKEN }}"
-      - name: "Upload Forge to CurseForge"
-        uses: itsmeow/curseforge-upload@master
+      - name: "Publish-Forge"
+        uses: Kir-Antipov/mc-publish@v3.2
         with:
-          changelog: "Changelog not added yet..."
-          file_path: "build/libs/${{ steps.build.outputs.mod_name }}-${{ steps.build.outputs.minecraft_version }}-${{ steps.build.outputs.version }}.jar"
-          game_endpoint: minecraft
-          relations: "${{ steps.build.outputs.curse_relations }}"
-          game_versions: "${{ steps.build.outputs.curse_versions }}"
-          project_id: "${{ steps.build.outputs.curse_project_id }}"
-          release_type: release
-          token: "${{ secrets.CF_API_TOKEN }}"
+          curseforge-id: 250881
+          curseforge-token: ${{ secrets.CF_API_TOKEN }}
+          modrinth-id: zvXcZYaA
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          loaders: forge
+          version: ${{ steps.build.outputs.version }}
+          files: "build/libs/${{ steps.build.outputs.mod_name }}-${{ steps.build.outputs.minecraft_version }}-${{ steps.build.outputs.version }}.jar"
+          name: "${{ steps.build.outputs.mod_name }}-${{ steps.build.outputs.minecraft_version }}-${{ steps.build.outputs.version }}.jar"
       - name: "Build Success"
         id: build-success
         uses: itsmeow/webhook-action@master
