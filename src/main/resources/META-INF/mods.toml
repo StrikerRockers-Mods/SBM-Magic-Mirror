@@ -14,13 +14,13 @@ description = '''Mirror like object that is used to quickly get to the surface a
 [[dependencies.sbmmagicmirror]] #optional
 modId = "forge"
 mandatory = true
-versionRange = "[41,)"
+versionRange = "[44,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.sbmmagicmirror]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.19,)"
+versionRange = "[1.19.3,)"
 ordering = "NONE"
 side = "BOTH"

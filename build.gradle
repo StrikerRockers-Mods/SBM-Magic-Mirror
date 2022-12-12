@@ -15,7 +15,7 @@ repositories {
 }
 
 version = project.mod_version
-archivesBaseName = project.mod_name + '-' + project.minecraft_version
+archivesBaseName = project.mod_name + '-forge-' + project.minecraft_version
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 

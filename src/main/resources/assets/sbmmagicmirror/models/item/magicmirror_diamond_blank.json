@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "sbmmagicmirror:items/diamond_clean"
+    "layer0": "sbmmagicmirror:item/diamond_clean"
   }
 }

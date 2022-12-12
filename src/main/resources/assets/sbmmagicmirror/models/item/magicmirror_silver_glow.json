@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "sbmmagicmirror:items/silver_clean",
-    "layer1": "sbmmagicmirror:items/glow"
+    "layer0": "sbmmagicmirror:item/silver_clean",
+    "layer1": "sbmmagicmirror:item/glow"
   }
 }

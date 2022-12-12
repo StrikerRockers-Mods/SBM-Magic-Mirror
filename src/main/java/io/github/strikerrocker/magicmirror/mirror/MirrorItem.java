@@ -13,7 +13,10 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -35,7 +38,7 @@ public class MirrorItem extends Item {
     public MirrorState currentMirrorState = MirrorState.DEFAULT;
 
     public MirrorItem(MirrorSubType type) {
-        super(new Properties().stacksTo(1).tab(CreativeModeTab.TAB_TOOLS));
+        super(new Properties().stacksTo(1));
         ItemProperties.register(this, new ResourceLocation(MagicMirror.DOMAIN, "state"), (stack, world, entity, no) -> entity instanceof Player ? getState((Player) entity) : 0);
     }
 
